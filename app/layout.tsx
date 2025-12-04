@@ -1,6 +1,7 @@
 import type React from "react"
 import { GoogleTagManager } from "@next/third-parties/google"
 import Script from "next/script"
+import { Providers } from "@/app/providers"
 import "./globals.css"
 
 export default function RootLayout({
@@ -18,7 +19,9 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }

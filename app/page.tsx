@@ -1,5 +1,14 @@
-import Step1 from "../step-1"
+"use client"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Page() {
-  return <Step1 />
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push("/dashboard")
+  }, [router])
+
+  return null
 }
