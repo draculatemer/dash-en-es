@@ -1,5 +1,8 @@
 "use client"
 
+// 1. Add this line to disable static prerendering for the dashboard
+export const dynamic = "force-dynamic";
+
 import { useAuth } from "@/lib/auth-context"
 import { translations } from "@/lib/translations"
 import DashboardLayout from "@/components/dashboard-layout"
@@ -7,7 +10,9 @@ import { Activity, TrendingUp, Users, Zap } from "lucide-react"
 
 export default function DashboardHome() {
   const { language } = useAuth()
-  const t = translations[language]
+  
+  // Safety check: Fallback to 'en' if language isn't loaded yet to prevent crashes
+  const t = translations[language || 'en'] 
 
   const stats = [
     {
@@ -40,8 +45,9 @@ export default function DashboardHome() {
     <DashboardLayout activeTab="">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">{t.welcome}</h1>
-          <p className="text-muted-foreground mt-2">{t.selectFeature}</p>
+          {/* Add optional chaining (?) just in case t is undefined momentarily */}
+          <h1 className="text-3xl font-bold text-foreground">{t?.welcome}</h1>
+          <p className="text-muted-foreground mt-2">{t?.selectFeature}</p>
         </div>
 
         {/* Stats Grid */}
