@@ -6,6 +6,8 @@ import BlockedFeature from "@/components/blocked-feature"
 import { useAuth } from "@/lib/auth-context"
 import { translations } from "@/lib/translations"
 
+export const dynamic = "force-dynamic"
+
 export default function DatingAppScannerPage() {
   const { language } = useAuth()
   const t = translations[language]

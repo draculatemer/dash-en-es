@@ -8,6 +8,8 @@ import { translations } from "@/lib/translations"
 import { Input } from "@/components/ui/input"
 import { User, Instagram } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export default function InstagramScannerPage() {
   const { language } = useAuth()
   const t = translations[language]
