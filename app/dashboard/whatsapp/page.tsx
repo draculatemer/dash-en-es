@@ -152,6 +152,7 @@ const countries = [
   { code: "+675", name: "Papua New Guinea", flag: "🇵🇬", placeholder: "723 45678" },
   { code: "+689", name: "French Polynesia", flag: "🇵🇫", placeholder: "87 12 34 56" },
   { code: "+48", name: "Poland", flag: "🇵🇱", placeholder: "512 345 678" },
+  { code: "+351", name: "Portugal", flag: "🇵🇹", placeholder: "912 345 678" },
   { code: "+242", name: "Republic of the Congo", flag: "🇨🇬", placeholder: "06 123 4567" },
   { code: "+243", name: "Democratic Republic of the Congo", flag: "🇨🇩", placeholder: "081 123 4567" },
   { code: "+262", name: "Réunion", flag: "🇷🇪", placeholder: "0692 12 34 56" },
