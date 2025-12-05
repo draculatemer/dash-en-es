@@ -15,10 +15,12 @@ import {
   CheckCircle, 
   Heart, 
   MessageCircle, 
-  MessageSquare, // Ícone para comentários
-  Bookmark,      // Ícone para salvos
+  MessageSquare, 
+  Bookmark,      
   Loader2,
-  Search
+  X, 
+  Send, 
+  Clock 
 } from "lucide-react"
 
 // ==========================================================
@@ -29,12 +31,74 @@ const FEMALE_IMAGES = ["/images/male/perfil/1.jpg", "/images/male/perfil/2.jpg",
 const MALE_PROFILES = ["@john.doe92", "@mike_anderson", "@chris_williams", "@danny.smith", "@liam.baker", "@noah_carter", "@ryan_hills", "@ethan_jones55", "@oliver.miller78", "@jacob_thomas23", "@logan_green45", "@mason.evans67", "@elijah_wood89", "@james.parker12", "@benjamin_hall34", "@lucas_gray56", "@aiden.clark78", "@wyatt_brooks90"]
 const MALE_IMAGES = ["/images/female/perfil/1.jpg", "/images/female/perfil/2.jpg", "/images/female/perfil/3.jpg", "/images/female/perfil/4.jpg", "/images/female/perfil/5.jpg", "/images/female/perfil/6.jpg", "/images/female/perfil/7.jpg", "/images/female/perfil/8.jpeg", "/images/female/perfil/9.jpg"]
 
-const LIKED_BY_MALE_PHOTOS = ["/images/male/liked/male-liked-photo-1.jpg", "/images/male/liked/male-liked-photo-2.jpeg", "/images/male/liked/male-liked-photo-3.jpeg"]
-const LIKED_BY_MALE_STORIES = ["/images/male/liked/male-liked-story-1.jpg", "/images/male/liked/male-liked-story-2.jpg", "/images/male/liked/male-liked-story-3.jpg"]
-const LIKED_BY_FEMALE_PHOTOS = ["/images/female/liked/female-liked-photo-1.jpg", "/images/female/liked/female-liked-photo-2.jpg", "/images/female/liked/female-liked-photo-3.jpg"]
-const LIKED_BY_FEMALE_STORIES = ["/images/female/liked/female-liked-story-1.jpg", "/images/female/liked/female-liked-story-2.jpg", "/images/female/liked/female-liked-story3.jpg"]
+const LIKED_BY_MALE_PHOTOS = ["/images/male/liked/male-liked-photo-1.jpg", "/images/male/liked/male-liked-photo-2.jpeg", "/images/male/liked/male-liked-photo-3.jpeg", "/images/male/liked/male-liked-photo-4.jpg", "/images/male/liked/male-liked-photo-5.jpg", "/images/male/liked/male-liked-photo-6.jpg", "/images/male/liked/male-liked-photo-7.jpg", "/images/male/liked/male-liked-photo-8.jpg", "/images/male/liked/male-liked-photo-9.jpg", "/images/male/liked/male-liked-photo-10.jpg", "/images/male/liked/male-liked-photo-11.jpg", "/images/male/liked/male-liked-photo-12.jpg", "/images/male/liked/male-liked-photo-13.jpg"]
+const LIKED_BY_MALE_STORIES = ["/images/male/liked/male-liked-story-1.jpg", "/images/male/liked/male-liked-story-2.jpg", "/images/male/liked/male-liked-story-3.jpg", "/images/male/liked/male-liked-story-4.jpg", "/images/male/liked/male-liked-story-5.jpg", "/images/male/liked/male-liked-story-6.jpg", "/images/male/liked/male-liked-story-7.jpg", "/images/male/liked/male-liked-story-8.jpg", "/images/male/liked/male-liked-story-9.jpg", "/images/male/liked/male-liked-story-10.jpg", "/images/male/liked/male-liked-story-11.jpg", "/images/male/liked/male-liked-story-12.jpg", "/images/male/liked/male-liked-story-13.jpg"]
+const LIKED_BY_FEMALE_PHOTOS = ["/images/female/liked/female-liked-photo-1.jpg", "/images/female/liked/female-liked-photo-2.jpg", "/images/female/liked/female-liked-photo-3.jpg", "/images/female/liked/female-liked-photo-4.jpg", "/images/female/liked/female-liked-photo-5.jpg", "/images/female/liked/female-liked-photo-6.jpg", "/images/female/liked/female-liked-photo-7.jpg", "/images/female/liked/female-liked-photo-8.jpg", "/images/female/liked/female-liked-photo-9.jpg", "/images/female/liked/female-liked-photo-10.jpg", "/images/female/liked/female-liked-photo-11.jpg", "/images/female/liked/female-liked-photo-12.jpg", "/images/female/liked/female-liked-photo-13.jpg"]
+const LIKED_BY_FEMALE_STORIES = ["/images/female/liked/female-liked-story-1.jpg", "/images/female/liked/female-liked-story-2.jpg", "/images/female/liked/female-liked-story-3.jpg", "/images/female/liked/female-liked-story-4.jpg", "/images/female/liked/female-liked-story-5.jpg", "/images/female/liked/female-liked-story-6.jpg", "/images/female/liked/female-liked-story-7.jpg", "/images/female/liked/female-liked-story-8.jpg", "/images/female/liked/female-liked-story-9.jpg", "/images/female/liked/female-liked-story-10.jpg", "/images/female/liked/female-liked-story-11.jpg", "/images/female/liked/female-liked-story-12.jpg", "/images/female/liked/female-liked-story-13.jpg"]
 
-const INTERCEPTED_COMMENTS = ["Wow, you are very hot 🥰", "🫣😏", "I'm getting horny 🥵", "drives me crazy 😈", "Beautiful pic!", "Send me DM", "Miss you"]
+const INTERCEPTED_COMMENTS = ["Wow, you are very hot 🥰", "🫣😏", "I'm getting horny 🥵", "drives me crazy 😈", "Beautiful pic!", "Send me DM", "Miss you", "You're so sexy 😍", "Can't stop staring 🔥", "You turn me on 😉", "Damn, you're irresistible 😜", "Let's get naughty together 💋", "You're making me wild 🐾", "Hot damn! 🌶️", "I want more of you 😘", "You're driving me insane 😈", "Send nudes? 🫣", "You're my fantasy 🥵", "Let's DM now 📩"]
+
+// ==========================================================
+// MOCK DE CONVERSAS (DINÂMICAS POR GÊNERO)
+// ==========================================================
+
+// Se o alvo for FEMALE (Alvo Mulher falando com Homem)
+// Guy = other (esquerda), Woman = me (direita)
+const CHATS_FOR_FEMALE_TARGET = [
+    [ // Conversation 1
+        { sender: "other", text: "Hey, that pic you posted is fire! 😍" },
+        { sender: "me", text: "Haha thanks! Glad you liked it. What's up?" },
+        { sender: "other", text: "Just thinking about you... We should catch up soon." },
+        { sender: "me", text: "I'd love that! Been missing our chats too 🔥" },
+        { sender: "other", text: "How about this weekend? Dinner on me? 😉" },
+        { sender: "me", text: "Sounds perfect. Can't wait!" }
+    ],
+    [ // Conversation 2
+        { sender: "other", text: "Saw your update – you're glowing! What's your secret? 😏" },
+        { sender: "me", text: "Aw, you're sweet! Maybe it's just good vibes lol. How've you been?" },
+        { sender: "other", text: "Better now talking to you. We need to hang out again." },
+        { sender: "me", text: "Totally agree. When are you free? I'm down for anything 😘" },
+        { sender: "other", text: "Friday night? Movie or something fun?" },
+        { sender: "me", text: "Yes please! That'd be amazing." }
+    ],
+    [ // Conversation 3
+        { sender: "other", text: "Your story made my day brighter. Looking stunning as always 🌟" },
+        { sender: "me", text: "Thanks, that's so nice! You've been on my mind too." },
+        { sender: "other", text: "Really? We should make some new memories together." },
+        { sender: "me", text: "I'm all in. What do you have in mind? 😈" },
+        { sender: "other", text: "How about a spontaneous adventure this week?" },
+        { sender: "me", text: "Love the idea! Let's do it." }
+    ]
+]
+
+// Se o alvo for MALE (Alvo Homem falando com Mulher)
+// Man = me (direita), Woman = other (esquerda)
+const CHATS_FOR_MALE_TARGET = [
+    [ // Conversation 1
+        { sender: "me", text: "Hey, that story of yours got me hooked... you're looking dangerously hot 😏" },
+        { sender: "other", text: "Haha, thanks! What caught your eye?" },
+        { sender: "me", text: "Everything, but that smile is killer. Miss seeing it up close 🔥" },
+        { sender: "other", text: "Aw, you're sweet. We should fix that soon." },
+        { sender: "me", text: "How about tonight? Let's make some heat together 😈" },
+        { sender: "other", text: "Tempting... I'm free after 8." }
+    ],
+    [ // Conversation 2
+        { sender: "me", text: "Saw your pic – damn, you're fire! Can't stop thinking about you 🥵" },
+        { sender: "other", text: "Lol, really? What's on your mind?" },
+        { sender: "me", text: "You in that outfit... drives me wild. We need to hang out ASAP 😉" },
+        { sender: "other", text: "Sounds fun. Been thinking about you too." },
+        { sender: "me", text: "Good, because I have some naughty ideas for us 💋" },
+        { sender: "other", text: "Tell me more... I'm intrigued." }
+    ],
+    [ // Conversation 3
+        { sender: "me", text: "Your update just made my day – you're stunning and sexy as hell 🌶️" },
+        { sender: "other", text: "Thanks! You always know how to flatter." },
+        { sender: "me", text: "Not flattery, truth. Let's catch up and turn up the heat 😘" },
+        { sender: "other", text: "I'd like that. When?" },
+        { sender: "me", text: "This weekend? Promise it'll be unforgettable 🔥" },
+        { sender: "other", text: "Deal. Can't wait!" }
+    ]
+]
 
 export default function InstagramScannerPage() {
   const { language } = useAuth()
@@ -55,14 +119,56 @@ export default function InstagramScannerPage() {
   const [visiblePosts, setVisiblePosts] = useState<number>(0)
   
   // Estados do passo 3 (Resultados)
-  // Nova state para controlar as abas
   const [resultTab, setResultTab] = useState<"messages" | "likes" | "comments" | "saved">("messages")
-  
-  const [randomizedResults, setRandomizedResults] = useState<Array<{ username: string; image: string; type: "like" | "message" }>>([])
+  const [randomizedResults, setRandomizedResults] = useState<Array<{ username: string; image: string; type: "like" | "message"; chatHistory?: any[] }>>([])
   const [interceptedImages, setInterceptedImages] = useState<Array<{ image: string; comment: string }>>([])
   const [savedImages, setSavedImages] = useState<string[]>([])
 
+  // Estado para o Chat Popup
+  const [selectedChat, setSelectedChat] = useState<any>(null)
+
+  // Estado para o Cronômetro Individual
+  const [countdownString, setCountdownString] = useState("6d 23h 59m")
+
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // --- LÓGICA DO CRONÔMETRO (User Specific) ---
+  useEffect(() => {
+    // Apenas roda no cliente
+    const STORAGE_KEY = "user_first_scan_access";
+    
+    // 1. Verifica se já existe uma data de acesso
+    let firstAccess = localStorage.getItem(STORAGE_KEY);
+    
+    // 2. Se não existir, salva o momento atual
+    if (!firstAccess) {
+        firstAccess = Date.now().toString();
+        localStorage.setItem(STORAGE_KEY, firstAccess);
+    }
+
+    // 3. Define a data alvo (7 dias a partir do primeiro acesso)
+    const targetDate = parseInt(firstAccess) + (7 * 24 * 60 * 60 * 1000);
+
+    // 4. Inicia o intervalo de atualização
+    const timerInterval = setInterval(() => {
+        const now = Date.now();
+        const difference = targetDate - now;
+
+        if (difference <= 0) {
+            setCountdownString("0d 00h 00m (Atualizando...)");
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        
+        setCountdownString(`${days}d ${hours}h ${minutes}m`);
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, []);
+
 
   // --- FUNÇÕES AUXILIARES ---
   const sanitizeUsername = (username: string): string => {
@@ -117,7 +223,6 @@ export default function InstagramScannerPage() {
   const handleStartScan = () => {
     if (!profileData || !selectedGender) return
 
-    // 1. Iniciar busca de posts (background)
     const fetchPosts = async () => {
         try {
           const cleanUsername = sanitizeUsername(instagramHandle)
@@ -138,12 +243,10 @@ export default function InstagramScannerPage() {
     }
     fetchPosts()
 
-    // 2. Mudar para tela de loading
     setStep(2)
     setLoadingProgress(0)
     setVisiblePosts(0)
 
-    // 3. Animação da Barra de Progresso
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 95) {
@@ -154,7 +257,6 @@ export default function InstagramScannerPage() {
       })
     }, 800)
 
-    // 4. Animação de aparecer posts
     const postsInterval = setInterval(() => {
         setVisiblePosts((prev) => {
           if (prev >= 9) {
@@ -165,7 +267,6 @@ export default function InstagramScannerPage() {
         })
     }, 1500)
 
-    // 5. Finalizar após X segundos (simulado)
     setTimeout(() => {
       setLoadingProgress(100)
       setTimeout(() => {
@@ -177,41 +278,55 @@ export default function InstagramScannerPage() {
   // --- LÓGICA DO PASSO 3 (Geração de Dados) ---
   useEffect(() => {
     if (step === 3) {
-      // 1. Sorteia interações (Mensagens e Likes de usuários)
       let profilesToUse = FEMALE_PROFILES
       let imagesToUse = FEMALE_IMAGES
       let likedImagesSource = LIKED_BY_MALE_PHOTOS.concat(LIKED_BY_MALE_STORIES)
+      let chatSource = CHATS_FOR_FEMALE_TARGET // Default
+      
+      // Se selecionei FEMALE, o alvo é mulher. Os perfis com quem ela fala são HOMENS.
+      // Se selecionei MALE, o alvo é homem. Os perfis com quem ele fala são MULHERES.
       
       if (selectedGender === "female") {
+        // Alvo mulher -> Interage com Homens
         profilesToUse = MALE_PROFILES
         imagesToUse = MALE_IMAGES
         likedImagesSource = LIKED_BY_FEMALE_PHOTOS.concat(LIKED_BY_FEMALE_STORIES)
+        chatSource = CHATS_FOR_FEMALE_TARGET
+      } else {
+        // Alvo homem -> Interage com Mulheres (Male e Non-binary cai aqui como default para mulher interagir)
+        profilesToUse = FEMALE_PROFILES
+        imagesToUse = FEMALE_IMAGES
+        likedImagesSource = LIKED_BY_MALE_PHOTOS.concat(LIKED_BY_MALE_STORIES)
+        chatSource = CHATS_FOR_MALE_TARGET
       }
 
-      // Sorteia usuários
-      const randomUsernames = shuffleAndPick(profilesToUse, 6) // Pega mais para ter dados para mensagens e likes
-      const randomImages = shuffleAndPick(imagesToUse, 6)
+      // 1. Sorteia usuários (3 Mensagens + 6 Likes = 9 Total)
+      const randomUsernames = shuffleAndPick(profilesToUse, 9) 
+      const randomImages = shuffleAndPick(imagesToUse, 9)
 
-      // Cria lista mista para usar nas abas
-      const results = randomUsernames.map((username, index) => ({
-        username,
-        image: randomImages[index % randomImages.length],
-        type: (index < 3 ? "message" : "like") as "like" | "message", // Primeiros 3 são mensagens
-      }))
+      const results = randomUsernames.map((username, index) => {
+        const isMessage = index < 3
+        return {
+            username,
+            image: randomImages[index % randomImages.length],
+            type: (isMessage ? "message" : "like") as "like" | "message",
+            // Atribui o chat correspondente se for mensagem (0->Chat1, 1->Chat2, 2->Chat3)
+            chatHistory: isMessage ? chatSource[index] : undefined
+        }
+      })
       setRandomizedResults(results)
 
-      // 2. Sorteia imagens Comentadas (antigas "interceptadas")
+      // 2. Comentários
       const randomCommentedImages = shuffleAndPick(likedImagesSource, 4)
       const randomComments = shuffleAndPick(INTERCEPTED_COMMENTS, 4)
-
       const commentedData = randomCommentedImages.map((img, index) => ({
         image: img,
         comment: randomComments[index % randomComments.length],
       }))
       setInterceptedImages(commentedData)
 
-      // 3. Sorteia imagens Salvas (usa o restante das imagens de stories/posts)
-      const randomSaved = shuffleAndPick(likedImagesSource.reverse(), 4)
+      // 3. Saved (Quero 6 imagens)
+      const randomSaved = shuffleAndPick(likedImagesSource.reverse(), 6)
       setSavedImages(randomSaved)
     }
   }, [step, selectedGender])
@@ -250,10 +365,70 @@ export default function InstagramScannerPage() {
       )
   }
 
+  // --- MODAL DE CHAT ---
+  const ChatModal = () => {
+    if (!selectedChat) return null
+    
+    // Pega o histórico específico desse chat ou usa um array vazio se der erro
+    const messages = selectedChat.chatHistory || []
+
+    return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-in fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col h-[500px]">
+                {/* Header */}
+                <div className="bg-gray-50 border-b p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <img src={selectedChat.image} className="w-10 h-10 rounded-full border border-gray-200" />
+                        <div>
+                            <p className="font-bold text-sm">{selectedChat.username}</p>
+                            <p className="text-xs text-green-600 flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/> Online
+                            </p>
+                        </div>
+                    </div>
+                    <button onClick={() => setSelectedChat(null)} className="p-2 hover:bg-gray-200 rounded-full transition">
+                        <X size={20} className="text-gray-500"/>
+                    </button>
+                </div>
+
+                {/* Chat Body */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                    <p className="text-xs text-center text-gray-400 my-2">Today, 2:30 AM</p>
+                    {messages.map((msg: any, i: number) => (
+                        <div key={i} className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}>
+                            <div className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
+                                msg.sender === "me" 
+                                ? "bg-blue-500 text-white rounded-br-none" 
+                                : "bg-white border text-gray-800 rounded-bl-none shadow-sm"
+                            }`}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Footer Input */}
+                <div className="p-3 bg-white border-t flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                        <div className="w-4 h-4 border-2 border-current rounded-full"/>
+                    </div>
+                    <input 
+                        disabled 
+                        placeholder="Reply..." 
+                        className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none"
+                    />
+                    <button className="text-blue-500 p-2">
+                        <Send size={20} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+  }
+
   // PASSO 1: INPUTS
   const renderStep1 = () => (
     <div className="space-y-6">
-        {/* Seletor de Gênero */}
         <div className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">1. Select Target's Gender</h3>
             <div className="grid grid-cols-3 gap-3">
@@ -274,7 +449,6 @@ export default function InstagramScannerPage() {
             </div>
         </div>
 
-        {/* Input de Usuário */}
         <div className="space-y-3">
             <h3 className="text-sm font-medium text-foreground">2. Enter Instagram Username</h3>
             <div className="relative">
@@ -288,7 +462,6 @@ export default function InstagramScannerPage() {
                 />
             </div>
             
-            {/* Feedback de Loading/Erro do Perfil */}
             {isLoadingProfile && (
                  <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
                     <Loader2 className="w-4 h-4 animate-spin" /> Searching profile...
@@ -300,7 +473,6 @@ export default function InstagramScannerPage() {
             {!isLoadingProfile && profileData && <ProfileCard />}
         </div>
 
-        {/* Botão de Ação */}
         <button
             onClick={handleStartScan}
             disabled={!profileData || !selectedGender || isLoadingProfile}
@@ -315,10 +487,7 @@ export default function InstagramScannerPage() {
   const renderStep2 = () => (
     <div className="space-y-6 animate-fade-in">
         <h2 className="text-xl font-bold text-center">Analyzing @{instagramHandle}...</h2>
-        
         <ProfileCard />
-
-        {/* Barra de Progresso */}
         <div className="space-y-2">
             <div className="flex justify-between text-xs font-mono text-muted-foreground">
                 <span>SCANNING DATABASE...</span>
@@ -331,8 +500,6 @@ export default function InstagramScannerPage() {
                 />
             </div>
         </div>
-
-        {/* Grid de Posts sendo "analisados" */}
         <div className="grid grid-cols-3 gap-2 opacity-80">
             {instagramPosts.slice(0, visiblePosts).map((post, i) => (
                 <div key={i} className="aspect-square rounded-md overflow-hidden bg-gray-100 animate-fade-in relative">
@@ -346,12 +513,10 @@ export default function InstagramScannerPage() {
                      </div>
                 </div>
             ))}
-            {/* Placeholders */}
             {Array.from({ length: Math.max(0, 9 - visiblePosts) }).map((_, i) => (
                 <div key={`p-${i}`} className="aspect-square rounded-md bg-secondary animate-pulse" />
             ))}
         </div>
-        
         <p className="text-center text-sm text-muted-foreground animate-pulse">
             Analyzing interactions, likes, and direct messages...
         </p>
@@ -360,12 +525,12 @@ export default function InstagramScannerPage() {
 
   // PASSO 3: RESULTADOS E ABAS
   const renderStep3 = () => {
-    // Filtros para as abas
-    const messages = randomizedResults.filter(r => r.type === "message");
-    const likes = randomizedResults.filter(r => r.type === "like");
+    // Separa os resultados para Directs (3) e Likes (6)
+    const messages = randomizedResults.filter(r => r.type === "message").slice(0, 3);
+    const likes = randomizedResults.filter(r => r.type === "like").slice(0, 6);
 
     return (
-        <div className="space-y-6 animate-fade-in pb-10">
+        <div className="space-y-6 animate-fade-in pb-4">
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg flex items-center justify-center gap-2 text-green-700 font-bold text-lg">
                 <CheckCircle className="w-6 h-6" /> Scan Completed Successfully
             </div>
@@ -411,38 +576,41 @@ export default function InstagramScannerPage() {
             {/* --- CONTEÚDO DAS ABAS --- */}
             <div className="min-h-[300px]">
                 
-                {/* 1. ABA DE MENSAGENS */}
+                {/* 1. ABA DE MENSAGENS (3 PERFIS + POPUP) */}
                 {resultTab === "messages" && (
                     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
                         <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800">
                             <MessageCircle className="text-blue-500 w-5 h-5" /> Recent Direct Messages
                         </h3>
-                        {messages.length > 0 ? messages.map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                                <img src={item.image} alt="user" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                        <p className="text-sm text-gray-500 mb-2">Click on a profile to view intercepted chat.</p>
+                        
+                        {messages.map((item, i) => (
+                            <div 
+                                key={i} 
+                                onClick={() => setSelectedChat(item)}
+                                className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-blue-200"
+                            >
+                                <img src={item.image} alt="user" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm group-hover:scale-105 transition-transform" />
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center">
                                         <p className="font-bold text-gray-900">{item.username}</p>
-                                        <span className="text-xs text-gray-400">2h ago</span>
+                                        <span className="text-xs text-red-500 font-semibold bg-red-50 px-2 py-0.5 rounded-full">Suspicious</span>
                                     </div>
                                     <p className="text-sm text-gray-600 flex items-center gap-1">
-                                        Sent a message <span className="w-2 h-2 rounded-full bg-blue-500 ml-1"></span>
+                                        Click to read history... <span className="w-2 h-2 rounded-full bg-blue-500 ml-1"></span>
                                     </p>
                                 </div>
                             </div>
-                        )) : (
-                            <p className="text-gray-500 text-center py-10">No recent messages found.</p>
-                        )}
+                        ))}
                     </div>
                 )}
 
-                {/* 2. ABA DE LIKES */}
+                {/* 2. ABA DE LIKES (6 PERFIS) */}
                 {resultTab === "likes" && (
                     <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
                         <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800">
                             <Heart className="text-pink-500 w-5 h-5" /> Liked by Target
                         </h3>
-                        <p className="text-sm text-gray-500">Users whose photos {instagramHandle} liked recently.</p>
                         <div className="grid grid-cols-1 gap-3">
                              {likes.map((item, i) => (
                                 <div key={i} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
@@ -470,7 +638,6 @@ export default function InstagramScannerPage() {
                             {interceptedImages.map((item, index) => (
                                 <div key={index} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                                     <div className="relative h-48 w-full">
-                                        {/* REMOVIDO BLUR E LOCK */}
                                         <img
                                             src={item.image || "/placeholder.svg"}
                                             alt={`Commented content ${index + 1}`}
@@ -493,16 +660,15 @@ export default function InstagramScannerPage() {
                     </div>
                 )}
 
-                {/* 4. ABA DE SALVOS */}
+                {/* 4. ABA DE SALVOS (6 IMAGENS) */}
                 {resultTab === "saved" && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                          <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800">
                             <Bookmark className="text-purple-500 w-5 h-5" /> Saved to Collection
                         </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                             {savedImages.map((img, index) => (
                                 <div key={index} className="relative aspect-square rounded-xl overflow-hidden shadow-sm group">
-                                     {/* REMOVIDO BLUR E LOCK */}
                                     <img 
                                         src={img} 
                                         className="w-full h-full object-cover transition-transform group-hover:scale-105" 
@@ -517,6 +683,21 @@ export default function InstagramScannerPage() {
                     </div>
                 )}
             </div>
+
+            {/* RODAPÉ COM AVISO DE ATUALIZAÇÃO E TIMER DINÂMICO */}
+            <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col items-center justify-center gap-1 text-[11px] uppercase tracking-wide text-green-700 font-medium opacity-80 text-center">
+                <div className="flex items-center gap-2">
+                    <Clock size={12} className="animate-pulse" />
+                    <span>Next automatic system update in:</span>
+                </div>
+                <span className="text-green-800 font-bold bg-green-100 px-2 py-0.5 rounded">
+                    {countdownString}
+                </span>
+                <span className="text-[10px] text-gray-400 normal-case mt-1"></span>
+            </div>
+
+            {/* RENDERIZA O MODAL SE TIVER UM CHAT SELECIONADO */}
+            {selectedChat && <ChatModal />}
         </div>
     )
   }
@@ -533,7 +714,6 @@ export default function InstagramScannerPage() {
             {step === 3 && renderStep3()}
         </FeatureCard>
 
-        {/* Info Card - Só aparece no passo 1 */}
         {step === 1 && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <div className="flex gap-4">
