@@ -86,6 +86,7 @@ const countries = [
   { code: "+63", name: "Philippines", flag: "🇵🇭", placeholder: "912 345 6789" },
   { code: "+358", name: "Finland", flag: "🇫🇮", placeholder: "50 123 4567" },
   { code: "+679", name: "Fiji", flag: "🇫🇯", placeholder: "920 1234" },
+  { code: "+33", name: "France", flag: "🇫🇷", placeholder: "6 12 34 56 78" },
   { code: "+241", name: "Gabon", flag: "🇬🇦", placeholder: "06 12 34 56 78" },
   { code: "+995", name: "Georgia", flag: "🇬🇪", placeholder: "555 12 34 56" },
   { code: "+350", name: "Gibraltar", flag: "🇬🇮", placeholder: "571 12345" },
@@ -144,6 +145,7 @@ const countries = [
   { code: "+683", name: "Niue", flag: "🇳🇺", placeholder: "811 1234" },
   { code: "+47", name: "Norway", flag: "🇳🇴", placeholder: "406 12 345" },
   { code: "+687", name: "New Caledonia", flag: "🇳🇨", placeholder: "750 1234" },
+  { code: "+64", name: "New Zealand", flag: "🇳🇿", placeholder: "21 123 4567" },
   { code: "+968", name: "Oman", flag: "🇴🇲", placeholder: "921 12345" },
   { code: "+31", name: "Netherlands", flag: "🇳🇱", placeholder: "6 12345678" },
   { code: "+92", name: "Pakistan", flag: "🇵🇰", placeholder: "0300 1234567" },
@@ -151,8 +153,9 @@ const countries = [
   { code: "+970", name: "Palestine", flag: "🇵🇸", placeholder: "0599 123 456" },
   { code: "+675", name: "Papua New Guinea", flag: "🇵🇬", placeholder: "723 45678" },
   { code: "+689", name: "French Polynesia", flag: "🇵🇫", placeholder: "87 12 34 56" },
-  { code: "+48", name: "Poland", flag: "🇵🇱", placeholder: "512 345 678" },
   { code: "+351", name: "Portugal", flag: "🇵🇹", placeholder: "912 345 678" },
+  { code: "+48", name: "Poland", flag: "🇵🇱", placeholder: "512 345 678" },
+  { code: "+44", name: "United Kingdom", flag: "🇬🇧", placeholder: "7911 123456" },
   { code: "+242", name: "Republic of the Congo", flag: "🇨🇬", placeholder: "06 123 4567" },
   { code: "+243", name: "Democratic Republic of the Congo", flag: "🇨🇩", placeholder: "081 123 4567" },
   { code: "+262", name: "Réunion", flag: "🇷🇪", placeholder: "0692 12 34 56" },
@@ -209,7 +212,7 @@ const loadingStepsList = [
     { id: "complete", text: "Synchronization complete!" },
 ]
 
-// Componente do Popup de Chat
+// Componente do Popup de Chat (ATUALIZADO PARA SUPORTAR IMAGENS)
 const ChatPopup = ({ onClose, profilePhoto, conversationData, conversationName }: any) => {
   const chatEndRef = useRef<HTMLDivElement>(null)
   
@@ -299,7 +302,7 @@ export default function WhatsAppScannerPage() {
   const t = translations[language || "en"]
 
   // --- ESTADOS ---
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1) // 1: Input, 2: Loading, 3: Results
   const [selectedGender, setSelectedGender] = useState<'Male' | 'Female' | 'Non-binary' | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("")
   const [selectedCountry, setSelectedCountry] = useState(countries[0]) // Default US
@@ -426,7 +429,7 @@ export default function WhatsAppScannerPage() {
         { "type": "outgoing", "content": "Already decided that this morning 😈", "time": "2:26 PM" },
         { "type": "outgoing", "content": "Been wet since you texted", "time": "2:26 PM" },
         { "type": "incoming", "content": "Send me something to get me through the day", "time": "2:28 PM" },
-        { "type": "outgoing", "content": "(Photo sent – mirror selfie in the office bathroom, skirt pulled up, no panties, biting finger)", "time": "2:31 PM" },
+        { "type": "incoming", "image": "/images/female/zap/chat/female-chat.jpg", "time": "2:31 PM" },
         { "type": "outgoing", "content": "This pussy is yours tonight", "time": "2:31 PM" },
         { "type": "incoming", "content": "Jesus fucking Christ", "time": "2:32 PM" },
         { "type": "incoming", "content": "Room 512. 9 sharp. I’m gonna ruin you", "time": "2:32 PM" },
@@ -443,9 +446,40 @@ export default function WhatsAppScannerPage() {
           lastMsg: isTargetMale ? "Fuck, can’t wait ❤️" : "That’s the plan ❤️", 
           chatData: isTargetMale ? CHAT_FOR_MALE_TARGET : CHAT_FOR_FEMALE_TARGET
       },
-      { img: chatAvatars[1], name: names[1], time: "Yesterday", lastMsg: "📷 Photo", chatData: [] },
-      { img: chatAvatars[2], name: names[2], time: "Yesterday", lastMsg: "Missed voice call", chatData: [] },
-      { img: chatAvatars[3], name: names[3], time: "2 days ago", lastMsg: "Call me when you can", chatData: [] },
+      // RESTAURANDO AS 3 CONVERSAS GENÉRICAS
+      { 
+          img: chatAvatars[1], 
+          name: names[1], 
+          time: "Yesterday", 
+          lastMsg: "📷 Photo", 
+          chatData: [
+              { type: "incoming", content: "Did you delete the photos?", time: "11:45 PM" },
+              { type: "outgoing", content: "Yes, don't worry", time: "11:47 PM" },
+              { type: "incoming", content: "Check this one before I delete it", time: "11:50 PM" }
+          ] 
+      },
+      { 
+          img: chatAvatars[2], 
+          name: names[2], 
+          time: "Yesterday", 
+          lastMsg: "Missed voice call", 
+          chatData: [
+              { type: "incoming", content: "Where are you?", time: "4:00 PM" },
+              { type: "outgoing", content: "On my way", time: "4:05 PM" },
+              { type: "incoming", content: "Hurry up! I'm already wet/hard... 🔥", time: "4:10 PM" }
+          ] 
+      },
+      { 
+          img: chatAvatars[3], 
+          name: names[3], 
+          time: "2 days ago", 
+          lastMsg: "Call me when you can", 
+          chatData: [
+              { type: "outgoing", content: "I can't talk right now, spouse is here", time: "2:00 PM" },
+              { type: "incoming", content: "It's urgent. We need to talk about us.", time: "2:05 PM" },
+              { type: "incoming", content: "Call me when you can", time: "2:06 PM" }
+          ] 
+      },
     ];
 
     return { reportConversations: conversations, reportMedia: media };
