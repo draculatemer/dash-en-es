@@ -24,9 +24,9 @@ import {
 // ==========================================================
 // DADOS MOCKADOS
 // ==========================================================
-const FEMALE_PROFILES = ["@jessy_nutty", "@alexis_30", "@izes", "@maryjane434", "@emma.whistle32", "@celina_anderson467", "@letty.miriah99", "@sophia_rose45", "@katie.bell87"]
+const FEMALE_PROFILES = ["@jessy_nutty", "@alexis_30", "@izes", "@maryjane434", "@emma.whistle32", "@celina_anderson467", "@letty.miriah99", "@sophia_rose45", "@katie.bell87", "@lily_grace23", "@mia.evans56", "@olivia_star78", "@ava_johnson91", "@isabella.moon12", "@harper_lee34", "@evelyn.brooks67", "@abigail_smith89", "@ella.frost45"]
 const FEMALE_IMAGES = ["/images/male/perfil/1.jpg", "/images/male/perfil/2.jpg", "/images/male/perfil/3.jpg", "/images/male/perfil/4.jpg", "/images/male/perfil/5.jpg", "/images/male/perfil/6.jpg", "/images/male/perfil/7.jpg", "/images/male/perfil/8.jpg", "/images/male/perfil/9.jpg"]
-const MALE_PROFILES = ["@john.doe92", "@mike_anderson", "@chris_williams", "@danny.smith", "@liam.baker", "@noah_carter", "@ryan_hills", "@ethan_jones55", "@oliver.miller78"]
+const MALE_PROFILES = ["@john.doe92", "@mike_anderson", "@chris_williams", "@danny.smith", "@liam.baker", "@noah_carter", "@ryan_hills", "@ethan_jones55", "@oliver.miller78", "@jacob_thomas23", "@logan_green45", "@mason.evans67", "@elijah_wood89", "@james.parker12", "@benjamin_hall34", "@lucas_gray56", "@aiden.clark78", "@wyatt_brooks90"]
 const MALE_IMAGES = ["/images/female/perfil/1.jpg", "/images/female/perfil/2.jpg", "/images/female/perfil/3.jpg", "/images/female/perfil/4.jpg", "/images/female/perfil/5.jpg", "/images/female/perfil/6.jpg", "/images/female/perfil/7.jpg", "/images/female/perfil/8.jpeg", "/images/female/perfil/9.jpg"]
 
 const LIKED_BY_MALE_PHOTOS = ["/images/male/liked/male-liked-photo-1.jpg", "/images/male/liked/male-liked-photo-2.jpeg", "/images/male/liked/male-liked-photo-3.jpeg"]
