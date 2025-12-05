@@ -39,7 +39,6 @@ const countries = [
   { code: "+33", name: "France", flag: "🇫🇷", placeholder: "6 12 34 56 78" },
   { code: "+34", name: "Spain", flag: "🇪🇸", placeholder: "612 34 56 78" },
   { code: "+52", name: "Mexico", flag: "🇲🇽", placeholder: "55 1234 5678" },
-
   // --- REST OF THE WORLD (Alphabetical) ---
   { code: "+355", name: "Albania", flag: "🇦🇱", placeholder: "067 123 4567" },
   { code: "+49", name: "Germany", flag: "🇩🇪", placeholder: "1512 3456789" },
@@ -87,7 +86,6 @@ const countries = [
   { code: "+63", name: "Philippines", flag: "🇵🇭", placeholder: "912 345 6789" },
   { code: "+358", name: "Finland", flag: "🇫🇮", placeholder: "50 123 4567" },
   { code: "+679", name: "Fiji", flag: "🇫🇯", placeholder: "920 1234" },
-  { code: "+33", name: "France", flag: "🇫🇷", placeholder: "6 12 34 56 78" },
   { code: "+241", name: "Gabon", flag: "🇬🇦", placeholder: "06 12 34 56 78" },
   { code: "+995", name: "Georgia", flag: "🇬🇪", placeholder: "555 12 34 56" },
   { code: "+350", name: "Gibraltar", flag: "🇬🇮", placeholder: "571 12345" },
@@ -146,7 +144,6 @@ const countries = [
   { code: "+683", name: "Niue", flag: "🇳🇺", placeholder: "811 1234" },
   { code: "+47", name: "Norway", flag: "🇳🇴", placeholder: "406 12 345" },
   { code: "+687", name: "New Caledonia", flag: "🇳🇨", placeholder: "750 1234" },
-  { code: "+64", name: "New Zealand", flag: "🇳🇿", placeholder: "21 123 4567" },
   { code: "+968", name: "Oman", flag: "🇴🇲", placeholder: "921 12345" },
   { code: "+31", name: "Netherlands", flag: "🇳🇱", placeholder: "6 12345678" },
   { code: "+92", name: "Pakistan", flag: "🇵🇰", placeholder: "0300 1234567" },
@@ -154,9 +151,7 @@ const countries = [
   { code: "+970", name: "Palestine", flag: "🇵🇸", placeholder: "0599 123 456" },
   { code: "+675", name: "Papua New Guinea", flag: "🇵🇬", placeholder: "723 45678" },
   { code: "+689", name: "French Polynesia", flag: "🇵🇫", placeholder: "87 12 34 56" },
-  { code: "+351", name: "Portugal", flag: "🇵🇹", placeholder: "912 345 678" },
   { code: "+48", name: "Poland", flag: "🇵🇱", placeholder: "512 345 678" },
-  { code: "+44", name: "United Kingdom", flag: "🇬🇧", placeholder: "7911 123456" },
   { code: "+242", name: "Republic of the Congo", flag: "🇨🇬", placeholder: "06 123 4567" },
   { code: "+243", name: "Democratic Republic of the Congo", flag: "🇨🇩", placeholder: "081 123 4567" },
   { code: "+262", name: "Réunion", flag: "🇷🇪", placeholder: "0692 12 34 56" },
@@ -213,7 +208,7 @@ const loadingStepsList = [
     { id: "complete", text: "Synchronization complete!" },
 ]
 
-// Componente do Popup de Chat (ATUALIZADO PARA SUPORTAR IMAGENS)
+// Componente do Popup de Chat
 const ChatPopup = ({ onClose, profilePhoto, conversationData, conversationName }: any) => {
   const chatEndRef = useRef<HTMLDivElement>(null)
   
@@ -303,10 +298,10 @@ export default function WhatsAppScannerPage() {
   const t = translations[language || "en"]
 
   // --- ESTADOS ---
-  const [step, setStep] = useState(1) // 1: Input, 2: Loading, 3: Results
+  const [step, setStep] = useState(1)
   const [selectedGender, setSelectedGender] = useState<'Male' | 'Female' | 'Non-binary' | null>(null);
   const [phoneNumber, setPhoneNumber] = useState("")
-  const [selectedCountry, setSelectedCountry] = useState(countries[0])
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]) // Default US
   const [showCountryDropdown, setShowCountryDropdown] = useState(false)
   const [countrySearch, setCountrySearch] = useState("")
   
@@ -377,8 +372,9 @@ export default function WhatsAppScannerPage() {
         ? ["Unknown Number", "Secret 🔒", "Julia Gym", "Work (Ana)"]
         : ["Unknown Number", "Secret 🔒", "Mark Gym", "Work (Daniel)"];
 
-    // SCRIPT 1: ALVO HOMEM (MALE) TRAINDO
-    // Ele fala com ela
+    // -------------------------------------------------------------
+    // SCRIPT 1: ALVO HOMEM (MALE) TRAINDO COM MULHER
+    // -------------------------------------------------------------
     const CHAT_FOR_MALE_TARGET = [
         { "type": "incoming", "content": "Heyyy, you free tonight? 😏", "time": "10:20 AM" },
         { "type": "outgoing", "content": "Depends… what kinda trouble you planning this time?", "time": "10:21 AM" },
@@ -394,7 +390,10 @@ export default function WhatsAppScannerPage() {
         { "type": "incoming", "content": "The one I love ripping the buttons off 😂", "time": "10:30 AM" },
         { "type": "outgoing", "content": "Jesus woman you’re killing me already", "time": "10:32 AM" },
         { "type": "outgoing", "content": "Send a pic so I can start getting hard?", "time": "10:32 AM" },
-        { "type": "incoming", "image": "/images/male/zap/chat/male-chat.jpg", "time": "10:35 AM" }, // IMAGEM ADICIONADA AQUI
+        
+        // IMAGEM SUBSTITUINDO O TEXTO CONFORME PEDIDO
+        { "type": "incoming", "image": "/images/male/zap/chat/male-chat.jpg", "time": "10:35 AM" },
+        
         { "type": "incoming", "content": "Just so you don’t forget what’s waiting for you tonight 🔥", "time": "10:35 AM" },
         { "type": "outgoing", "content": "Already saved in the hidden folder lol", "time": "10:37 AM" },
         { "type": "outgoing", "content": "9:30 I’ll pick you up at the usual spot. Don’t you dare be late", "time": "10:37 AM" },
@@ -406,8 +405,9 @@ export default function WhatsAppScannerPage() {
         { "type": "outgoing", "content": "Fuck, can’t wait ❤️", "time": "10:42 AM" }
     ]
 
-    // SCRIPT 2: ALVO MULHER (FEMALE) TRAINDO
-    // Ela fala com ele
+    // -------------------------------------------------------------
+    // SCRIPT 2: ALVO MULHER (FEMALE) TRAINDO COM HOMEM
+    // -------------------------------------------------------------
     const CHAT_FOR_FEMALE_TARGET = [
         { "type": "incoming", "content": "Hey trouble… still married? 😈", "time": "2:14 PM" },
         { "type": "incoming", "content": "Been thinking about that tight little dress you wore last time", "time": "2:15 PM" },
@@ -425,7 +425,7 @@ export default function WhatsAppScannerPage() {
         { "type": "outgoing", "content": "Already decided that this morning 😈", "time": "2:26 PM" },
         { "type": "outgoing", "content": "Been wet since you texted", "time": "2:26 PM" },
         { "type": "incoming", "content": "Send me something to get me through the day", "time": "2:28 PM" },
-        { "type": "incoming", "image": "/images/female/zap/chat/female-chat.jpg", "time": "2:31 PM" }, // IMAGEM ADICIONADA AQUI
+        { "type": "outgoing", "content": "(Photo sent – mirror selfie in the office bathroom, skirt pulled up, no panties, biting finger)", "time": "2:31 PM" },
         { "type": "outgoing", "content": "This pussy is yours tonight", "time": "2:31 PM" },
         { "type": "incoming", "content": "Jesus fucking Christ", "time": "2:32 PM" },
         { "type": "incoming", "content": "Room 512. 9 sharp. I’m gonna ruin you", "time": "2:32 PM" },
@@ -434,52 +434,17 @@ export default function WhatsAppScannerPage() {
         { "type": "incoming", "content": "That’s the plan ❤️", "time": "2:34 PM" }
     ]
 
-    // Chats Mockados
     const conversations = [
       { 
-          // CONVERSAÇÃO 1 - DINÂMICA
           img: chatAvatars[0], 
           name: names[0], 
           time: isTargetMale ? "10:42 AM" : "2:34 PM", 
           lastMsg: isTargetMale ? "Fuck, can’t wait ❤️" : "That’s the plan ❤️", 
           chatData: isTargetMale ? CHAT_FOR_MALE_TARGET : CHAT_FOR_FEMALE_TARGET
       },
-      { 
-          // CONVERSAÇÃO 2 - MOCK "SECRET"
-          img: chatAvatars[1], 
-          name: names[1], 
-          time: "Yesterday", 
-          lastMsg: "📷 Photo", 
-          chatData: [
-              { type: "incoming", content: "Did you delete the photos?", time: "11:45 PM" },
-              { type: "outgoing", content: "Yes, don't worry", time: "11:47 PM" },
-              { type: "incoming", content: "Check this one before I delete it", time: "11:50 PM" }
-          ] 
-      },
-      { 
-          // CONVERSAÇÃO 3 - MOCK "FRIEND"
-          img: chatAvatars[2], 
-          name: names[2], 
-          time: "Yesterday", 
-          lastMsg: "Missed voice call", 
-          chatData: [
-              { type: "incoming", content: "Where are you?", time: "4:00 PM" },
-              { type: "outgoing", content: "On my way", time: "4:05 PM" },
-              { type: "incoming", content: "Hurry up! I'm already wet/hard... 🔥", time: "4:10 PM" }
-          ] 
-      },
-      { 
-          // CONVERSAÇÃO 4 - MOCK "WORK"
-          img: chatAvatars[3], 
-          name: names[3], 
-          time: "2 days ago", 
-          lastMsg: "Call me when you can", 
-          chatData: [
-              { type: "outgoing", content: "I can't talk right now, spouse is here", time: "2:00 PM" },
-              { type: "incoming", content: "It's urgent. We need to talk about us.", time: "2:05 PM" },
-              { type: "incoming", content: "Call me when you can", time: "2:06 PM" }
-          ] 
-      },
+      { img: chatAvatars[1], name: names[1], time: "Yesterday", lastMsg: "📷 Photo", chatData: [] },
+      { img: chatAvatars[2], name: names[2], time: "Yesterday", lastMsg: "Missed voice call", chatData: [] },
+      { img: chatAvatars[3], name: names[3], time: "2 days ago", lastMsg: "Call me when you can", chatData: [] },
     ];
 
     return { reportConversations: conversations, reportMedia: media };
@@ -488,12 +453,34 @@ export default function WhatsAppScannerPage() {
   const filteredCountries = useMemo(() => countries.filter((c) => c.name.toLowerCase().includes(countrySearch.toLowerCase()) || c.code.includes(countrySearch)), [countrySearch])
 
   // --- ACTIONS ---
-  const fetchWhatsAppPhoto = async (phone: string) => {
+  const fetchWhatsAppPhoto = async (phoneInput: string, countryInput: string) => {
      setIsLoadingPhoto(true)
-     setTimeout(() => {
-        setProfilePhoto("/placeholder.svg") 
+     setProfilePhoto(null)
+
+     try {
+        const response = await fetch("/api/whatsapp-photo", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                phone: phoneInput,
+                countryCode: countryInput
+            }),
+        })
+
+        const data = await response.json()
+
+        if (data.success && data.result) {
+            setProfilePhoto(data.result)
+        } else {
+            console.log("No photo found")
+        }
+     } catch (error) {
+        console.error("Error fetching photo:", error)
+     } finally {
         setIsLoadingPhoto(false)
-     }, 1500)
+     }
   }
 
   const handlePhoneInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -502,12 +489,20 @@ export default function WhatsAppScannerPage() {
     setPhoneNumber(formatted)
     
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current)
+    
     debounceTimeout.current = setTimeout(() => {
         if (formatted.length >= 8) {
-            fetchWhatsAppPhoto(formatted)
+            fetchWhatsAppPhoto(formatted, selectedCountry.code)
         }
-    }, 1000)
+    }, 1200)
   }
+
+  // Tenta buscar novamente se mudar o país
+  useEffect(() => {
+      if(phoneNumber.length >= 8) {
+          fetchWhatsAppPhoto(phoneNumber, selectedCountry.code)
+      }
+  }, [selectedCountry])
 
   const handleStartClone = (e?: React.MouseEvent) => {
      if(e) e.preventDefault();
@@ -518,7 +513,7 @@ export default function WhatsAppScannerPage() {
      setCompletedSteps([])
      
      let currentStepIdx = 0
-     const totalDuration = 12000 // 12s total
+     const totalDuration = 12000
      const stepDuration = totalDuration / loadingStepsList.length
 
      const interval = setInterval(() => {
@@ -615,16 +610,18 @@ export default function WhatsAppScannerPage() {
             
             <div className="min-h-[60px] flex items-center justify-center">
                  {isLoadingPhoto ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="animate-spin h-4 w-4"/> Found WhatsApp account...</div>
-                 ) : profilePhoto && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="animate-spin h-4 w-4"/> Searching WhatsApp...</div>
+                 ) : profilePhoto ? (
                     <div className="flex items-center gap-3 bg-green-50 p-2 pr-4 rounded-full border border-green-200 animate-in fade-in slide-in-from-bottom-2">
-                        <img src={profilePhoto} className="w-10 h-10 rounded-full object-cover" alt="profile" />
+                        <img src={profilePhoto} className="w-10 h-10 rounded-full object-cover border border-green-300" alt="profile" />
                         <div>
                              <p className="text-xs font-bold text-green-700">Profile Found</p>
                              <p className="text-xs text-gray-600">Last seen: Recently</p>
                         </div>
                         <CheckCircle className="h-4 w-4 text-green-600 ml-auto" />
                     </div>
+                 ) : phoneNumber.length >= 8 && (
+                    <div className="text-xs text-gray-400">Waiting for response...</div>
                  )}
             </div>
         </div>
@@ -643,10 +640,10 @@ export default function WhatsAppScannerPage() {
   const renderStep2 = () => (
     <div className="space-y-6 animate-fade-in py-4">
         <div className="text-center space-y-4">
-             <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative">
-                 <img src={profilePhoto || "/placeholder.svg"} className="w-full h-full rounded-full object-cover opacity-80" alt="target" />
-                 <div className="absolute inset-0 flex items-center justify-center">
-                     <Loader2 className="h-8 w-8 text-green-600 animate-spin" />
+             <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg relative overflow-hidden">
+                 <img src={profilePhoto || "/placeholder.svg"} className="w-full h-full object-cover opacity-80" alt="target" />
+                 <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                     <Loader2 className="h-8 w-8 text-green-400 animate-spin" />
                  </div>
              </div>
              <div>
