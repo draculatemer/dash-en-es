@@ -53,7 +53,7 @@ const loadingStepsList = [
     { id: "complete", text: "Synchronization complete!" },
 ]
 
-// Componente do Popup de Chat
+// Componente do Popup de Chat (ATUALIZADO PARA SUPORTAR IMAGENS)
 const ChatPopup = ({ onClose, profilePhoto, conversationData, conversationName }: any) => {
   const chatEndRef = useRef<HTMLDivElement>(null)
   
@@ -86,20 +86,34 @@ const ChatPopup = ({ onClose, profilePhoto, conversationData, conversationName }
           {conversationData.map((msg: any, index: number) => (
              msg.type === "incoming" ? (
                 <div key={index} className="flex justify-start mb-1">
-                    <div className="bg-white rounded-lg rounded-tl-none p-2 px-3 max-w-[85%] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] relative">
-                        <p className={`text-[14px] text-[#111b21] leading-snug`}>
-                            {msg.content}
-                        </p>
-                        <span className="text-[10px] text-gray-400 float-right mt-1 ml-2 select-none">{msg.time}</span>
+                    <div className="bg-white rounded-lg rounded-tl-none p-2 px-2 max-w-[85%] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] relative">
+                        {/* Lógica para Imagem ou Texto */}
+                        {msg.image ? (
+                           <div className="mb-1 rounded-lg overflow-hidden">
+                              <img src={msg.image} alt="Photo" className="w-full h-auto object-cover" />
+                           </div>
+                        ) : (
+                           <p className={`text-[14px] text-[#111b21] leading-snug px-1 pt-1`}>
+                               {msg.content}
+                           </p>
+                        )}
+                        <span className="text-[10px] text-gray-400 float-right mt-0.5 ml-2 select-none">{msg.time}</span>
                     </div>
                 </div>
              ) : (
                 <div key={index} className="flex justify-end mb-1">
-                    <div className="bg-[#d9fdd3] rounded-lg rounded-tr-none p-2 px-3 max-w-[85%] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] relative">
-                        <p className={`text-[14px] text-[#111b21] leading-snug`}>
-                             {msg.content}
-                        </p>
-                        <div className="flex items-center justify-end gap-1 mt-1 select-none">
+                    <div className="bg-[#d9fdd3] rounded-lg rounded-tr-none p-2 px-2 max-w-[85%] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] relative">
+                        {/* Lógica para Imagem ou Texto (Outgoing) */}
+                        {msg.image ? (
+                           <div className="mb-1 rounded-lg overflow-hidden">
+                              <img src={msg.image} alt="Photo" className="w-full h-auto object-cover" />
+                           </div>
+                        ) : (
+                           <p className={`text-[14px] text-[#111b21] leading-snug px-1 pt-1`}>
+                               {msg.content}
+                           </p>
+                        )}
+                        <div className="flex items-center justify-end gap-1 mt-0.5 select-none">
                             <span className="text-[10px] text-gray-500">{msg.time}</span>
                             <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" />
                         </div>
@@ -187,8 +201,6 @@ export default function WhatsAppScannerPage() {
     const isTargetMale = selectedGender === 'Male';
     
     // CORREÇÃO DE GÊNERO:
-    // Se o alvo é Male -> Mostra fotos da pasta 'male' (que contém mulheres, seguindo a lógica do mock anterior)
-    // Se o alvo é Female -> Mostra fotos da pasta 'female' (que contém homens)
     const mediaFolder = isTargetMale ? 'male' : 'female'; 
 
     // Imagens para a galeria
@@ -201,10 +213,9 @@ export default function WhatsAppScannerPage() {
         `/images/${mediaFolder}/perfil/8.jpg`
     ];
 
-    // Nomes Mockados: Garante que nomes femininos apareçam para Male Target e vice-versa
     const names = isTargetMale 
-        ? ["Unknown Number", "Secret 🔒", "Julia Gym", "Work (Ana)"] // Para Homem ver
-        : ["Unknown Number", "Secret 🔒", "Mark Gym", "Work (Daniel)"]; // Para Mulher ver
+        ? ["Unknown Number", "Secret 🔒", "Julia Gym", "Work (Ana)"]
+        : ["Unknown Number", "Secret 🔒", "Mark Gym", "Work (Daniel)"];
 
     // SCRIPT 1: ALVO HOMEM (MALE) TRAINDO
     // Ele fala com ela
@@ -223,7 +234,7 @@ export default function WhatsAppScannerPage() {
         { "type": "incoming", "content": "The one I love ripping the buttons off 😂", "time": "10:30 AM" },
         { "type": "outgoing", "content": "Jesus woman you’re killing me already", "time": "10:32 AM" },
         { "type": "outgoing", "content": "Send a pic so I can start getting hard?", "time": "10:32 AM" },
-        { "type": "incoming", "content": "(Photo sent – black lingerie mirror selfie, biting lip)", "time": "10:35 AM" },
+        { "type": "incoming", "image": "/images/male/zap/chat/male-chat.jpg", "time": "10:35 AM" }, // IMAGEM ADICIONADA AQUI
         { "type": "incoming", "content": "Just so you don’t forget what’s waiting for you tonight 🔥", "time": "10:35 AM" },
         { "type": "outgoing", "content": "Already saved in the hidden folder lol", "time": "10:37 AM" },
         { "type": "outgoing", "content": "9:30 I’ll pick you up at the usual spot. Don’t you dare be late", "time": "10:37 AM" },
@@ -236,7 +247,7 @@ export default function WhatsAppScannerPage() {
     ]
 
     // SCRIPT 2: ALVO MULHER (FEMALE) TRAINDO
-    // Ela fala com ele (NOVO SCRIPT INSERIDO)
+    // Ela fala com ele
     const CHAT_FOR_FEMALE_TARGET = [
         { "type": "incoming", "content": "Hey trouble… still married? 😈", "time": "2:14 PM" },
         { "type": "incoming", "content": "Been thinking about that tight little dress you wore last time", "time": "2:15 PM" },
@@ -254,7 +265,7 @@ export default function WhatsAppScannerPage() {
         { "type": "outgoing", "content": "Already decided that this morning 😈", "time": "2:26 PM" },
         { "type": "outgoing", "content": "Been wet since you texted", "time": "2:26 PM" },
         { "type": "incoming", "content": "Send me something to get me through the day", "time": "2:28 PM" },
-        { "type": "outgoing", "content": "(Photo sent – mirror selfie in the office bathroom, skirt pulled up, no panties, biting finger)", "time": "2:31 PM" },
+        { "type": "incoming", "image": "/images/female/zap/chat/female-chat.jpg", "time": "2:31 PM" }, // IMAGEM ADICIONADA AQUI
         { "type": "outgoing", "content": "This pussy is yours tonight", "time": "2:31 PM" },
         { "type": "incoming", "content": "Jesus fucking Christ", "time": "2:32 PM" },
         { "type": "incoming", "content": "Room 512. 9 sharp. I’m gonna ruin you", "time": "2:32 PM" },
