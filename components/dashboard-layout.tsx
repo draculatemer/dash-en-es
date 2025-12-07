@@ -24,12 +24,12 @@ export default function DashboardLayout({
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div
         className={`${
-          sidebarOpen ? "fixed inset-0 z-40 md:relative md:z-auto md:inset-auto" : "hidden md:flex"
+          sidebarOpen ? "fixed inset-0 z-50 md:relative md:z-auto md:inset-auto" : "hidden md:flex"
         } md:flex flex-col`}
       >
-        {/* Mobile overlay */}
+        {/* Mobile overlay - positioned behind sidebar but above main content */}
         {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/50 md:hidden z-30" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed inset-0 bg-black/50 md:hidden z-40" onClick={() => setSidebarOpen(false)} />
         )}
         <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} activeTab={activeTab} />
       </div>
