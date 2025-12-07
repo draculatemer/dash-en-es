@@ -13,6 +13,7 @@ import {
   Globe,
   ChevronRight,
   Lock,
+  X,
 } from "lucide-react"
 
 interface SidebarProps {
@@ -21,7 +22,7 @@ interface SidebarProps {
   activeTab: string
 }
 
-export default function Sidebar({ open, activeTab }: SidebarProps) {
+export default function Sidebar({ open, onToggle, activeTab }: SidebarProps) {
   const { language } = useAuth()
   const t = translations[language]
 
@@ -79,13 +80,16 @@ export default function Sidebar({ open, activeTab }: SidebarProps) {
 
   return (
     <aside
-      className={`${
-        open ? "w-64" : "w-20"
-      } bg-white border-r border-border transition-all duration-300 flex flex-col overflow-hidden`}
+      className={`w-64 md:w-64 bg-white border-r border-border transition-all duration-300 flex flex-col overflow-hidden md:relative ${
+        open ? "relative" : ""
+      }`}
     >
       {/* Logo/Brand Area */}
-      <div className="h-16 flex items-center justify-center border-b border-border">
-        <div className="text-2xl font-bold text-primary">{open ? "Scanner" : "S"}</div>
+      <div className="h-16 flex items-center justify-between px-4 border-b border-border">
+        <div className="text-2xl font-bold text-primary">Scanner</div>
+        <button onClick={onToggle} className="md:hidden p-1 hover:bg-secondary rounded-md" aria-label="Close sidebar">
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Menu Items */}
@@ -99,34 +103,27 @@ export default function Sidebar({ open, activeTab }: SidebarProps) {
               {item.blocked ? (
                 <button
                   disabled
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-muted-foreground opacity-50 cursor-not-allowed mb-2 transition-all"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-muted-foreground opacity-50 cursor-not-allowed mb-2 transition-all text-sm md:text-sm"
                   title={t.featureUnavailable}
                 >
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <Icon className="w-5 h-5" />
                     <Lock className="w-3 h-3 absolute -bottom-1 -right-1 bg-white rounded-full p-0.5" />
                   </div>
-                  {open && (
-                    <>
-                      <span className="text-sm font-medium">{item.label}</span>
-                      <ChevronRight className="w-4 h-4 ml-auto" />
-                    </>
-                  )}
+                  <span className="text-sm font-medium">{item.label}</span>
+                  <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />
                 </button>
               ) : (
                 <Link
                   href={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-md transition-all mb-2 ${
+                  onClick={onToggle}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-md transition-all mb-2 text-sm md:text-sm ${
                     isActive ? "bg-primary text-white" : "text-foreground hover:bg-secondary"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  {open && (
-                    <>
-                      <span className="text-sm font-medium">{item.label}</span>
-                      <ChevronRight className="w-4 h-4 ml-auto" />
-                    </>
-                  )}
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                  <ChevronRight className="w-4 h-4 ml-auto flex-shrink-0" />
                 </Link>
               )}
             </div>
@@ -136,7 +133,7 @@ export default function Sidebar({ open, activeTab }: SidebarProps) {
 
       {/* Footer */}
       <div className="border-t border-border p-3 text-center text-xs text-muted-foreground">
-        {open && <p>© 2025 Dashboard</p>}
+        <p>© 2025 Dashboard</p>
       </div>
     </aside>
   )
