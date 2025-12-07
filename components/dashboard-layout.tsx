@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { translations } from "@/lib/translations"
@@ -21,17 +20,28 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-background flex-col md:flex-row">
-      {/* Sidebar - Hidden on mobile, visible on desktop */}
+      {/* Sidebar Container */}
       <div
         className={`${
           sidebarOpen ? "fixed inset-0 z-50 md:relative md:z-auto md:inset-auto" : "hidden md:flex"
         } md:flex flex-col`}
       >
-        {/* Mobile overlay - positioned behind sidebar but above main content */}
+        {/* Mobile overlay - z-40 */}
         {sidebarOpen && (
-          <div className="fixed inset-0 bg-black/50 md:hidden z-40" onClick={() => setSidebarOpen(false)} />
+          <div 
+            className="fixed inset-0 bg-black/50 md:hidden z-40" 
+            onClick={() => setSidebarOpen(false)} 
+          />
         )}
-        <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} activeTab={activeTab} />
+        
+        {/* 👇 CORREÇÃO AQUI: Envolva a Sidebar nesta div com z-50 */}
+        <div className="relative z-50 h-full">
+          <Sidebar 
+            open={sidebarOpen} 
+            onToggle={() => setSidebarOpen(!sidebarOpen)} 
+            activeTab={activeTab} 
+          />
+        </div>
       </div>
 
       {/* Main Content */}
