@@ -2,12 +2,13 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+// Se o seu VS Code reclamar do import abaixo, use: import { createClient } from '@/utils/supabase/server'
+import { createClient } from '../../utils/supabase/server'
 
+// --- FUNÇÃO DE LOGIN (Mantém o redirecionamento) ---
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  // Pega os dados dos inputs do formulário do v0
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -16,13 +17,14 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/error') // Ou trate o erro como preferir
+    redirect('/error')
   }
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard') // Redireciona para sua pasta dashboard
+  redirect('/dashboard')
 }
 
+// --- FUNÇÃO DE SIGNUP (Atualizada para funcionar com o Popup) ---
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
@@ -34,9 +36,10 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data)
 
   if (error) {
-    redirect('/error')
+    // Retorna o erro para o front-end mostrar (se quiser)
+    return { error: error.message }
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  // Retorna sucesso para abrir o modal
+  return { success: true }
 }

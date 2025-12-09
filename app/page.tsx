@@ -5,6 +5,10 @@ import { login, signup } from '@/app/auth/actions'
 
 export default function LoginPage() {
   const [lang, setLang] = useState<'en' | 'es'>('en')
+  
+  // Novo estado para controlar o Popup
+  const [showModal, setShowModal] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const t = {
     en: {
@@ -15,7 +19,11 @@ export default function LoginPage() {
       btnSignIn: "Sign In",
       btnSignUp: "Sign Up (Create Account)",
       placeholderEmail: "example@email.com",
-      placeholderPass: "••••••••"
+      placeholderPass: "••••••••",
+      // Traduções do Modal
+      modalTitle: "Check your email!",
+      modalBody: "We've sent a confirmation link to your email address. Please click the link to activate your account and access the dashboard.",
+      modalBtn: "Got it, I'll check it"
     },
     es: {
       title: "Accede a tu cuenta",
@@ -25,20 +33,34 @@ export default function LoginPage() {
       btnSignIn: "Entrar",
       btnSignUp: "Registrarse (Crear Cuenta)",
       placeholderEmail: "ejemplo@correo.com",
-      placeholderPass: "••••••••"
+      placeholderPass: "••••••••",
+      // Traduções do Modal
+      modalTitle: "¡Verifica tu correo!",
+      modalBody: "Hemos enviado un enlace de confirmación a tu correo electrónico. Por favor haz clic en el enlace para activar tu cuenta y acceder al panel.",
+      modalBtn: "Entendido, voy a revisar"
     }
   }
 
   const text = t[lang]
 
+  // Função especial para lidar com o cadastro e abrir o modal
+  const handleSignup = async (formData: FormData) => {
+    setLoading(true)
+    const result = await signup(formData)
+    setLoading(false)
+
+    if (result?.success) {
+      setShowModal(true)
+    } else {
+      // Aqui você poderia mostrar um erro se quisesse
+      alert("Error signing up. Please try again.")
+    }
+  }
+
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gray-900">
       
-      {/* 
-          IMAGEM DE FUNDO 
-          Se a imagem não aparecer, verifique se ela está em: /public/bg.png
-          A classe 'brightness-50' já escurece a imagem automaticamente.
-      */}
+      {/* IMAGEM DE FUNDO */}
       <div className="absolute inset-0 z-0 bg-[url('/bg.png')] bg-cover bg-center brightness-50" />
 
       {/* Botões de Troca de Idioma */}
@@ -118,15 +140,48 @@ export default function LoginPage() {
               {text.btnSignIn}
             </button>
             
+            {/* O Botão de Signup agora chama a função handleSignup */}
             <button
-              formAction={signup}
-              className="flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+              formAction={handleSignup}
+              disabled={loading}
+              className="flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
-              {text.btnSignUp}
+              {loading ? "..." : text.btnSignUp}
             </button>
           </div>
         </form>
       </div>
+
+      {/* MODAL / POPUP DE SUCESSO */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full p-6 text-center transform transition-all scale-100">
+            
+            {/* Ícone de Email */}
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+              <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              {text.modalTitle}
+            </h3>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              {text.modalBody}
+            </p>
+
+            <button
+              onClick={() => setShowModal(false)}
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-gray-800 focus:outline-none sm:text-sm"
+            >
+              {text.modalBtn}
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
