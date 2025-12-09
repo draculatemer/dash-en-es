@@ -1,38 +1,34 @@
 "use client"
 
-import type React from "react"
-
 // 👇 Garante que a página seja dinâmica
 export const dynamic = "force-dynamic"
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from "react"
-import Script from "next/script"
+import { useState, useEffect, useRef, useMemo, Suspense } from "react"
 import DashboardLayout from "@/components/dashboard-layout"
 import FeatureCard from "@/components/feature-card"
 import { useAuth } from "@/lib/auth-context"
 import { translations } from "@/lib/translations"
 
-// Bibliotecas de UI e Ícones
-import useEmblaCarousel from "embla-carousel-react"
-import Autoplay from "embla-carousel-autoplay"
+// Ícones
 import {
   Zap,
   AlertTriangle,
   Flame,
-  Lock,
   Camera,
-  ChevronLeft,
-  ChevronRight,
   CheckCircle,
-  Users,
   MapPin,
   X,
   Loader2,
   Search,
+  MessageCircle,
+  Clock,
+  Send,
+  User,
+  MoreVertical
 } from "lucide-react"
 
 // =======================================================
-// DADOS MOCKADOS E TYPES
+// DADOS MOCKADOS
 // =======================================================
 
 interface Match {
@@ -45,71 +41,33 @@ interface Match {
   location: string
   distance: string
   bio: string
-  zodiac: string
-  mbti: string
-  passion: string
-  interests: string[]
+  images: string[]
 }
 
-const defaultMatchesData: Omit<Match, "location">[] = [
-  {
-    name: "Mila",
-    age: 26,
-    lastSeen: "6h ago",
-    avatar: "/images/male/tinder/5.jpg",
-    verified: true,
-    identity: "Bisexual",
-    distance: "2 km",
-    bio: "Part dreamer, part doer, all about good vibes. Ready to make some memories?",
-    zodiac: "Virgo",
-    mbti: "KU",
-    passion: "Coffee",
-    interests: ["Hiking", "Green Living", "Live Music", "Pottery"],
-  },
-  {
-    name: "John",
-    age: 25,
-    lastSeen: "4h ago",
-    avatar: "/images/female/tinder/5.jpg",
-    verified: true,
-    identity: "Bisexual",
-    distance: "2 km",
-    bio: "Half adrenaline junkie, half cozy blanket enthusiast. What’s your vibe?",
-    zodiac: "Leo",
-    mbti: "BU",
-    passion: "Fitness",
-    interests: ["Meditation", "Books", "Wine", "Music"],
-  },
-  {
-    name: "Harper",
-    age: 21,
-    lastSeen: "3h ago",
-    avatar: "/images/male/tinder/3.jpg",
-    verified: false,
-    identity: "Woman",
-    distance: "5 km",
-    bio: "Just a girl who loves sunsets and long walks on the beach. Looking for someone to share adventures with.",
-    zodiac: "Leo",
-    mbti: "UVA",
-    passion: "Yoga",
-    interests: ["Travel", "Photography", "Podcasts"],
-  },
-  {
-    name: "Will",
-    age: 23,
-    lastSeen: "2h ago",
-    avatar: "/images/female/tinder/3.jpg",
-    verified: true,
-    identity: "Man",
-    distance: "8 km",
-    bio: "Fluent in sarcasm and movie quotes. Let's find the best pizza place in town.",
-    zodiac: "Gemini",
-    mbti: "OHY",
-    passion: "Baking",
-    interests: ["Concerts", "Netflix", "Dogs"],
-  },
+// Mock de conversas (Dating context)
+const DATING_CHATS = [
+  [
+    { sender: "other", text: "Hey! Your profile caught my eye. 😉" },
+    { sender: "me", text: "Hi there! Thanks, you look great too." },
+    { sender: "other", text: "Are you free this weekend? I know a great sushi place." },
+    { sender: "me", text: "Sushi sounds perfect. I'm free Saturday night!" },
+    { sender: "other", text: "It's a date then! 🍣" }
+  ],
+  [
+    { sender: "me", text: "I have to ask... is that dog in your 3rd pic yours?" },
+    { sender: "other", text: "Haha yes! That's Buster. He's the real star here." },
+    { sender: "me", text: "He's adorable! We definitely need a dog playdate." },
+    { sender: "other", text: "Buster would love that. And so would I 😏" }
+  ],
+  [
+    { sender: "other", text: "So, what are you looking for on here?" },
+    { sender: "me", text: "Just seeing where things go. You?" },
+    { sender: "other", text: "Same. Maybe looking for someone to steal my hoodies." },
+    { sender: "me", text: "I'm excellent at hoodie theft. Watch out. 😈" }
+  ]
 ]
 
+// Dados bases
 const femaleMatchesData: Omit<Match, "location">[] = [
   {
     name: "Elizabeth",
@@ -119,11 +77,8 @@ const femaleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Woman",
     distance: "3 km",
-    bio: "Seeking new adventures and a great cup of coffee. Let's explore the city together.",
-    zodiac: "Aries",
-    mbti: "ENFP",
-    passion: "Traveling",
-    interests: ["Art", "History", "Podcasts"],
+    bio: "Seeking new adventures and a great cup of coffee.",
+    images: ["/images/male/tinder/1.jpg", "/images/male/tinder/2.jpg"]
   },
   {
     name: "Victoria",
@@ -133,11 +88,8 @@ const femaleMatchesData: Omit<Match, "location">[] = [
     verified: false,
     identity: "Woman",
     distance: "1 km",
-    bio: "Bookworm and aspiring chef. Tell me about the last great book you read.",
-    zodiac: "Taurus",
-    mbti: "ISFJ",
-    passion: "Cooking",
-    interests: ["Reading", "Yoga", "Documentaries"],
+    bio: "Bookworm and aspiring chef.",
+    images: ["/images/male/tinder/2.jpg", "/images/male/tinder/3.jpg"]
   },
   {
     name: "Charlotte",
@@ -147,13 +99,10 @@ const femaleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Woman",
     distance: "6 km",
-    bio: "Lover of live music and spontaneous road trips. What's our first destination?",
-    zodiac: "Sagittarius",
-    mbti: "ESFP",
-    passion: "Music",
-    interests: ["Concerts", "Photography", "Hiking"],
+    bio: "Lover of live music and spontaneous road trips.",
+    images: ["/images/male/tinder/3.jpg", "/images/male/tinder/4.jpg"]
   },
-  {
+    {
     name: "Emily",
     age: 25,
     lastSeen: "3h ago",
@@ -161,39 +110,8 @@ const femaleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Woman",
     distance: "4 km",
-    bio: "Fitness enthusiast who's equally happy on the couch with a good movie.",
-    zodiac: "Virgo",
-    mbti: "ISTJ",
-    passion: "Fitness",
-    interests: ["Movies", "Healthy Eating", "Dogs"],
-  },
-  {
-    name: "Grace",
-    age: 28,
-    lastSeen: "8h ago",
-    avatar: "/images/male/tinder/5.jpg",
-    verified: false,
-    identity: "Woman",
-    distance: "7 km",
-    bio: "Creative soul with a love for painting and poetry. Looking for meaningful conversations.",
-    zodiac: "Pisces",
-    mbti: "INFP",
-    passion: "Art",
-    interests: ["Museums", "Writing", "Coffee Shops"],
-  },
-  {
-    name: "Olivia",
-    age: 23,
-    lastSeen: "2h ago",
-    avatar: "/images/male/tinder/6.jpg",
-    verified: true,
-    identity: "Woman",
-    distance: "2 km",
-    bio: "Sarcasm is my second language. Let's find the best taco spot in town.",
-    zodiac: "Gemini",
-    mbti: "ENTP",
-    passion: "Comedy",
-    interests: ["Foodie", "Travel", "Stand-up"],
+    bio: "Fitness enthusiast.",
+    images: ["/images/male/tinder/4.jpg", "/images/male/tinder/5.jpg"]
   },
 ]
 
@@ -206,11 +124,8 @@ const maleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Man",
     distance: "2 km",
-    bio: "Engineer by day, musician by night. Let's talk about tech and tunes.",
-    zodiac: "Capricorn",
-    mbti: "INTJ",
-    passion: "Guitar",
-    interests: ["Technology", "Live Music", "Brewing"],
+    bio: "Engineer by day, musician by night.",
+    images: ["/images/female/tinder/1.jpg", "/images/female/tinder/2.jpg"]
   },
   {
     name: "James",
@@ -220,11 +135,8 @@ const maleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Man",
     distance: "5 km",
-    bio: "Outdoors enthusiast looking for someone to hike with. My dog will probably like you.",
-    zodiac: "Leo",
-    mbti: "ESTP",
-    passion: "Hiking",
-    interests: ["Camping", "Dogs", "Bonfires"],
+    bio: "Outdoors enthusiast looking for someone to hike with.",
+    images: ["/images/female/tinder/2.jpg", "/images/female/tinder/3.jpg"]
   },
   {
     name: "Henry",
@@ -234,13 +146,10 @@ const maleMatchesData: Omit<Match, "location">[] = [
     verified: false,
     identity: "Man",
     distance: "3 km",
-    bio: "Film buff and history nerd. Can recommend a movie for any mood.",
-    zodiac: "Cancer",
-    mbti: "INFJ",
-    passion: "Movies",
-    interests: ["History", "Reading", "Chess"],
+    bio: "Film buff and history nerd.",
+    images: ["/images/female/tinder/3.jpg", "/images/female/tinder/4.jpg"]
   },
-  {
+   {
     name: "Oliver",
     age: 27,
     lastSeen: "6h ago",
@@ -248,173 +157,13 @@ const maleMatchesData: Omit<Match, "location">[] = [
     verified: true,
     identity: "Man",
     distance: "8 km",
-    bio: "Just a guy who enjoys good food, good company, and exploring new places.",
-    zodiac: "Libra",
-    mbti: "ESFJ",
-    passion: "Foodie",
-    interests: ["Travel", "Cooking", "Sports"],
-  },
-  {
-    name: "Thomas",
-    age: 30,
-    lastSeen: "2h ago",
-    avatar: "/images/female/tinder/5.jpg",
-    verified: true,
-    identity: "Man",
-    distance: "4 km",
-    bio: "Trying to find someone who won't steal my fries. Kidding... mostly.",
-    zodiac: "Scorpio",
-    mbti: "ISTP",
-    passion: "Traveling",
-    interests: ["Photography", "Motorcycles", "Gym"],
-  },
-  {
-    name: "Edward",
-    age: 24,
-    lastSeen: "7h ago",
-    avatar: "/images/female/tinder/6.jpg",
-    verified: false,
-    identity: "Man",
-    distance: "6 km",
-    bio: "Fluent in sarcasm and bad jokes. Looking for a partner in crime.",
-    zodiac: "Aquarius",
-    mbti: "ENTP",
-    passion: "Gaming",
-    interests: ["Comedy", "Sci-Fi", "Concerts"],
+    bio: "Just a guy who enjoys good food.",
+    images: ["/images/female/tinder/4.jpg", "/images/female/tinder/5.jpg"]
   },
 ]
 
-const defaultCensoredPhotos = [
-  "/images/censored/photo1.jpg",
-  "/images/censored/photo2.jpg",
-  "/images/censored/photo3.jpg",
-  "/images/censored/photo4.jpg",
-]
-const femaleCensoredPhotos = [
-  "/images/male/tinder/censored/censored-f-1.jpg",
-  "/images/male/tinder/censored/censored-f-2.jpg",
-  "/images/male/tinder/censored/censored-f-3.jpg",
-  "/images/male/tinder/censored/censored-f-4.jpg",
-]
-const maleCensoredPhotos = [
-  "/images/female/tinder/censored/censored-h-1.jpg",
-  "/images/female/tinder/censored/censored-h-2.jpg",
-  "/images/female/tinder/censored/censored-h-3.jpg",
-  "/images/female/tinder/censored/censored-h-4.jpg",
-]
-
 // =======================================================
-// COMPONENTES AUXILIARES
-// =======================================================
-
-const PrevButton = (props: any) => {
-  const { enabled, onClick } = props
-  return (
-    <button
-      className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full disabled:opacity-30 transition-opacity z-10"
-      onClick={onClick}
-      disabled={!enabled}
-    >
-      <ChevronLeft size={20} />
-    </button>
-  )
-}
-
-const NextButton = (props: any) => {
-  const { enabled, onClick } = props
-  return (
-    <button
-      className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full disabled:opacity-30 transition-opacity z-10"
-      onClick={onClick}
-      disabled={!enabled}
-    >
-      <ChevronRight size={20} />
-    </button>
-  )
-}
-
-function MatchDetailModal({ match, onClose }: { match: Match; onClose: () => void }) {
-  useEffect(() => {
-    document.body.style.overflow = "hidden"
-    return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [])
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999] p-4 animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-2xl w-full max-w-sm max-h-[90vh] overflow-y-auto relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 z-10"
-        >
-          {" "}
-          <X size={20} />{" "}
-        </button>
-        <img
-          src={match.avatar || "/placeholder.svg"}
-          alt={match.name}
-          className="w-full h-80 object-cover rounded-t-2xl"
-        />
-        <div className="p-5">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold text-gray-800">{match.name}</h1>
-            {match.verified && <CheckCircle className="text-blue-500" fill="white" size={28} />}
-          </div>
-          <div className="flex flex-col gap-1 text-gray-600 mt-2 text-sm">
-            <div className="flex items-center gap-1.5">
-              <Users size={16} />
-              <p>{match.identity}</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin size={16} />
-              <p>{match.location}</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <p>📍 {match.distance} away</p>
-            </div>
-          </div>
-          <div className="mt-6">
-            <h2 className="font-bold text-gray-800">About Me</h2>
-            <p className="text-gray-600 mt-1">{match.bio}</p>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-4 text-sm">
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{match.zodiac}</span>
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{match.mbti}</span>
-            <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{match.passion}</span>
-          </div>
-          <div className="mt-6">
-            <h2 className="font-bold text-gray-800">My Interests</h2>
-            <div className="flex flex-wrap gap-2 mt-2 text-sm">
-              {match.interests.map((interest) => (
-                <span key={interest} className="border border-gray-300 text-gray-700 px-3 py-1 rounded-full">
-                  {interest}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="sticky bottom-0 grid grid-cols-2 gap-4 bg-white p-4 border-t border-gray-200">
-          <button className="bg-gray-200 text-gray-800 font-bold py-3 rounded-full hover:bg-gray-300 transition-colors">
-            Pass
-          </button>
-          <button className="bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-3 rounded-full hover:opacity-90 transition-opacity">
-            Like
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// =======================================================
-// CONTEÚDO PRINCIPAL (Separado para usar Suspense)
+// CONTEÚDO PRINCIPAL
 // =======================================================
 
 function DatingAppScannerContent() {
@@ -422,383 +171,426 @@ function DatingAppScannerContent() {
   const t = translations[language || "en"]
 
   // --- ESTADOS ---
-  const [pageState, setPageState] = useState<"input" | "loading" | "results">("input")
+  const [step, setStep] = useState(1) // 1: Input, 2: Scanning, 3: Results
   const [selectedGender, setSelectedGender] = useState<string | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
+  
+  // Estados de animação/loading
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  
+  // Estados de Resultados
+  const [resultTab, setResultTab] = useState<"matches" | "chats">("matches")
   const [userLocation, setUserLocation] = useState<string>("your city")
-  const [timeLeft, setTimeLeft] = useState(5 * 60)
+  const [selectedChat, setSelectedChat] = useState<any>(null) // Para o modal de chat
 
-  // --- CARROSSEL LOGIC ---
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: true })])
-  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
-  const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
-
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
-  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi])
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return
-    setSelectedIndex(emblaApi.selectedScrollSnap())
-    setPrevBtnEnabled(emblaApi.canScrollPrev())
-    setNextBtnEnabled(emblaApi.canScrollNext())
-  }, [emblaApi, setSelectedIndex])
-
-  useEffect(() => {
-    if (!emblaApi) return
-    onSelect()
-    setScrollSnaps(emblaApi.scrollSnapList())
-    emblaApi.on("select", onSelect)
-    emblaApi.on("reInit", onSelect)
-  }, [emblaApi, setScrollSnaps, onSelect])
+  // Timer
+  const [countdownString, setCountdownString] = useState("6d 23h 59m")
 
   // --- EFEITOS ---
 
-  // Timer
+  // Timer de 7 dias (Persistente por usuário)
   useEffect(() => {
-    if (pageState === "results" && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0))
-      }, 1000)
-      return () => clearInterval(timer)
+    const STORAGE_KEY = "user_first_scan_dating";
+    
+    let firstAccess = localStorage.getItem(STORAGE_KEY);
+    if (!firstAccess) {
+        firstAccess = Date.now().toString();
+        localStorage.setItem(STORAGE_KEY, firstAccess);
     }
-  }, [timeLeft, pageState])
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+    const targetDate = parseInt(firstAccess) + (7 * 24 * 60 * 60 * 1000);
+
+    const timerInterval = setInterval(() => {
+        const now = Date.now();
+        const difference = targetDate - now;
+
+        if (difference <= 0) {
+            setCountdownString("0d 00h 00m (Updating System...)");
+            return;
+        }
+
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        
+        setCountdownString(`${days}d ${hours}h ${minutes}m`);
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, []);
+
+  // Simulação de Scan (Passo 2)
+  const handleStartInvestigation = () => {
+    setStep(2)
+    setLoadingProgress(0)
+
+    // Simula barra de progresso
+    const interval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(interval)
+          return prev
+        }
+        return prev + Math.random() * 8
+      })
+    }, 400)
+
+    // Finaliza após 4.5 segundos
+    setTimeout(() => {
+      setLoadingProgress(100)
+      setTimeout(() => {
+        setStep(3)
+      }, 800)
+    }, 4500)
   }
 
-  // Location Fetch
-  useEffect(() => {
-    if (pageState === "results") {
-      const fetchLocation = async () => {
-        try {
-          // Aqui usaria sua API de location se existir
-          // const response = await fetch('/api/location');
-          // const data = await response.json();
-          // if (data.city) setUserLocation(data.city);
-        } catch (error) {
-          console.error("Could not fetch location.")
-        }
-      }
-      fetchLocation()
-    }
-  }, [pageState])
-
-  // Hotmart Scripts
-  useEffect(() => {
-    if (pageState === "results" && typeof (window as any).checkoutElements !== "undefined") {
-      try {
-        ;(window as any).checkoutElements.init("salesFunnel").mount("#hotmart-sales-funnel")
-      } catch (e) {
-        console.error("Failed to mount Hotmart widget:", e)
-      }
-    }
-  }, [pageState])
-
-  // --- MOCK DATA LOGIC ---
-  const fakeMatches: Match[] = useMemo(() => {
-    let baseMatches: Omit<Match, "location">[]
-    if (selectedGender === "Male") {
-      baseMatches = femaleMatchesData
-    } else if (selectedGender === "Female") {
-      baseMatches = maleMatchesData
-    } else {
-      baseMatches = defaultMatchesData
-    }
-    return baseMatches.map((match) => ({ ...match, location: `Lives in ${userLocation}` }))
-  }, [userLocation, selectedGender])
-
-  const censoredPhotos = useMemo(() => {
-    if (selectedGender === "Male") {
-      return femaleCensoredPhotos
-    }
-    if (selectedGender === "Female") {
-      return maleCensoredPhotos
-    }
-    return defaultCensoredPhotos
-  }, [selectedGender])
-
-  // --- HANDLERS ---
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImagePreview(URL.createObjectURL(e.target.files[0]))
     }
   }
 
-  const handleStartInvestigation = () => {
-    setPageState("loading")
-    setTimeout(() => {
-      setPageState("results")
-    }, 3500)
-  }
+  // Dados filtrados baseados no gênero
+  const matches = useMemo(() => {
+    let baseMatches: Omit<Match, "location">[]
+    if (selectedGender === "Male") {
+      baseMatches = femaleMatchesData
+    } else if (selectedGender === "Female") {
+      baseMatches = maleMatchesData
+    } else {
+      baseMatches = maleMatchesData // Default ou misto
+    }
+    
+    // Adiciona mock de chat para os primeiros 3
+    return baseMatches.map((match, index) => ({
+      ...match,
+      location: `Lives in ${userLocation}`,
+      chatHistory: index < 3 ? DATING_CHATS[index % DATING_CHATS.length] : null
+    }))
+  }, [userLocation, selectedGender])
 
   const genderEmojis: { [key: string]: string } = { Male: "👨🏻", Female: "👩🏻", "Non-binary": "🧑🏻" }
 
-  return (
-    <DashboardLayout activeTab="dating">
-      {selectedMatch && <MatchDetailModal match={selectedMatch} onClose={() => setSelectedMatch(null)} />}
+  // --- MODAL DE CHAT ---
+  const ChatModal = () => {
+    if (!selectedChat) return null
+    const messages = selectedChat.chatHistory || []
 
-      {/* Scripts externos (Hotmart) */}
-      <Script src="https://checkout.hotmart.com/lib/hotmart-checkout-elements.js" strategy="afterInteractive" />
+    return (
+        <div className="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedChat(null)}>
+            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl flex flex-col h-[500px]" onClick={(e) => e.stopPropagation()}>
+                {/* Header */}
+                <div className="bg-gradient-to-r from-red-500 to-pink-600 p-4 flex items-center justify-between text-white">
+                    <div className="flex items-center gap-3">
+                        <img src={selectedChat.avatar} className="w-10 h-10 rounded-full border-2 border-white" />
+                        <div>
+                            <p className="font-bold text-sm">{selectedChat.name}, {selectedChat.age}</p>
+                            <div className="flex items-center gap-1 text-xs opacity-90">
+                                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/> Online
+                            </div>
+                        </div>
+                    </div>
+                    <button onClick={() => setSelectedChat(null)} className="p-1.5 hover:bg-white/20 rounded-full transition">
+                        <X size={20} />
+                    </button>
+                </div>
 
-      <div className="max-w-xl mx-auto space-y-6">
-        <FeatureCard
-          title={pageState === "input" ? t?.dateAppsScannerTitle || "Dating Apps Scanner" : "Dating Profile Scan"}
-          description={
-            pageState === "input" ? t?.dateAppsScannerDesc : "Analyzing facial features against dating databases..."
-          }
-        >
-          {/* --- STEP 1: INPUT --- */}
-          {pageState === "input" && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex gap-3 text-sm">
-                <AlertTriangle className="text-yellow-600 flex-shrink-0" size={20} />
-                <p className="text-yellow-800">
-                  <span className="font-bold">Privacy Warning:</span> Facial recognition scans are powerful. Please
-                  ensure you are authorized to search for this person.
-                </p>
-              </div>
+                {/* Chat Body */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                    <p className="text-xs text-center text-gray-400 my-2">Match started 2 days ago</p>
+                    {messages.map((msg: any, i: number) => (
+                        <div key={i} className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}>
+                            <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                                msg.sender === "me" 
+                                ? "bg-blue-500 text-white rounded-br-none" 
+                                : "bg-white text-gray-800 border border-gray-200 rounded-bl-none"
+                            }`}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-              {/* Image Upload */}
-              <div className="bg-white rounded-xl border-2 border-dashed border-blue-200 p-6 text-center hover:bg-blue-50/50 transition-colors">
-                <h2 className="font-bold text-gray-800 mb-4">1. Upload Target's Photo</h2>
-                <label
-                  htmlFor="photo-upload"
-                  className="w-40 h-40 mx-auto flex items-center justify-center bg-gray-50 border-2 border-blue-100 rounded-full cursor-pointer overflow-hidden relative shadow-sm hover:scale-105 transition-transform"
-                >
-                  <input
+                {/* Footer Input */}
+                <div className="p-3 bg-white border-t flex items-center gap-2">
+                    <input 
+                        disabled 
+                        placeholder="Type a message..." 
+                        className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none cursor-not-allowed opacity-70"
+                    />
+                    <button className="text-pink-500 p-2 opacity-50 cursor-not-allowed">
+                        <Send size={20} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+  }
+
+  // --- STEP 1: INPUT ---
+  const renderStep1 = () => (
+    <div className="space-y-6 animate-fade-in">
+        <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex gap-3 text-sm">
+            <AlertTriangle className="text-yellow-600 flex-shrink-0" size={20} />
+            <p className="text-yellow-800">
+                <span className="font-bold">Privacy Warning:</span> Ensure you are authorized to search for this person. Results may contain sensitive dating activity.
+            </p>
+        </div>
+
+        {/* Image Upload */}
+        <div className="bg-white rounded-xl border-2 border-dashed border-blue-200 p-6 text-center hover:bg-blue-50/50 transition-colors">
+            <h2 className="font-bold text-gray-800 mb-4">1. Upload Target's Photo</h2>
+            <label
+                htmlFor="photo-upload"
+                className="w-40 h-40 mx-auto flex items-center justify-center bg-gray-50 border-2 border-blue-100 rounded-full cursor-pointer overflow-hidden relative shadow-sm hover:scale-105 transition-transform"
+            >
+                <input
                     id="photo-upload"
                     type="file"
                     accept="image/*"
                     className="hidden"
                     onChange={handleImageChange}
-                  />
-                  {imagePreview ? (
+                />
+                {imagePreview ? (
                     <img
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
+                        src={imagePreview || "/placeholder.svg"}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
                     />
-                  ) : (
+                ) : (
                     <div className="flex flex-col items-center text-blue-400">
-                      <Camera size={32} />
-                      <span className="text-xs font-bold mt-1">Tap to Upload</span>
+                        <Camera size={32} />
+                        <span className="text-xs font-bold mt-1">Tap to Upload</span>
                     </div>
-                  )}
-                </label>
-                <p className="text-xs text-gray-400 mt-4">Supports JPG, PNG (Max 5MB)</p>
-              </div>
-
-              {/* Gender Select */}
-              <div className="text-center">
-                <h2 className="font-bold text-gray-800 mb-3 text-left">2. Select Gender</h2>
-                <div className="grid grid-cols-3 gap-3">
-                  {["Male", "Female", "Non-binary"].map((gender) => (
-                    <button
-                      key={gender}
-                      onClick={() => setSelectedGender(gender)}
-                      className={`p-3 border rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
-                        selectedGender === gender
-                          ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <span className="text-3xl">{genderEmojis[gender]}</span>
-                      <span className="text-xs font-bold text-gray-700">{gender}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={handleStartInvestigation}
-                disabled={!imagePreview || !selectedGender}
-                className="w-full h-14 bg-gradient-to-r from-red-500 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
-              >
-                <Search size={20} />
-                SCAN DATING APPS
-              </button>
-            </div>
-          )}
-
-          {/* --- STEP 2: LOADING --- */}
-          {pageState === "loading" && (
-            <div className="text-center py-12 space-y-6 animate-fade-in">
-              <div className="relative w-24 h-24 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-t-pink-500 animate-spin"></div>
-                {imagePreview && (
-                  <div className="absolute inset-2 rounded-full overflow-hidden">
-                    <img
-                      src={imagePreview || "/placeholder.svg"}
-                      className="w-full h-full object-cover opacity-50"
-                      alt="target"
-                    />
-                  </div>
                 )}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">Scanning Databases...</h2>
-                <p className="text-sm text-gray-500 mt-2">Checking Tinder, Bumble, Hinge, and 14 others...</p>
-              </div>
-            </div>
-          )}
+            </label>
+            <p className="text-xs text-gray-400 mt-4">AI Face Recognition Technology</p>
+        </div>
 
-          {/* --- STEP 3: RESULTS --- */}
-          {pageState === "results" && (
-            <div className="space-y-4 animate-fade-in">
-              {/* Banner de Sucesso */}
-              <div className="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center gap-3">
-                <Zap className="fill-yellow-400 text-yellow-400" size={24} />
-                <div>
-                  <h1 className="font-bold text-sm">PROFILE FOUND ON TINDER</h1>
-                  <p className="text-xs text-red-100 opacity-90">
-                    Status: <span className="font-bold bg-white/20 px-1 rounded">Online Recently</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-4 gap-2">
-                <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
-                  <p className="text-xl font-bold text-red-600">6</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">Matches</p>
-                </div>
-                <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
-                  <p className="text-xl font-bold text-orange-500">30</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">Likes</p>
-                </div>
-                <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
-                  <p className="text-xl font-bold text-purple-600">4</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">Chats</p>
-                </div>
-                <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
-                  <p className="text-xl font-bold text-gray-800">18h</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">Last Seen</p>
-                </div>
-              </div>
-
-              {/* Recent Matches List */}
-              <div className="bg-slate-900 text-white p-4 rounded-xl shadow-lg">
-                <div className="flex items-center gap-2 mb-4">
-                  <Flame className="text-orange-500 fill-orange-500" size={20} />
-                  <h2 className="font-bold">Recent Matches Found</h2>
-                </div>
-
-                <div className="space-y-3">
-                  {fakeMatches.map((match, index) => (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedMatch(match)}
-                      className="flex items-center gap-3 bg-slate-800 p-2 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors border border-slate-700"
-                    >
-                      <img
-                        src={match.avatar || "/placeholder.svg"}
-                        alt={match.name}
-                        className="w-10 h-10 rounded-full object-cover border border-slate-500"
-                      />
-                      <div className="flex-grow min-w-0">
-                        <p className="font-bold text-sm truncate">
-                          {match.name}, {match.age}
-                        </p>
-                        <p className="text-xs text-gray-400">Active chat detected</p>
-                      </div>
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Censored Carousel */}
-              <div className="bg-slate-900 text-white p-4 rounded-xl shadow-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <Camera className="text-gray-400" size={20} />
-                  <h2 className="font-bold">Hidden Photos</h2>
-                </div>
-
-                <div className="overflow-hidden relative rounded-lg border border-slate-700" ref={emblaRef}>
-                  <div className="flex">
-                    {censoredPhotos.map((src, index) => (
-                      <div className="relative flex-[0_0_100%] aspect-video bg-gray-800 overflow-hidden" key={index}>
-                        <img
-                          src={src || "/placeholder.svg"}
-                          className="w-full h-full object-cover filter blur-lg opacity-60"
-                          alt="Censored content"
-                        />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                          <Lock size={32} className="mb-2" />
-                          <span className="font-bold text-xs tracking-widest bg-black/50 px-2 py-1 rounded">
-                            BLOCKED CONTENT
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <PrevButton onClick={scrollPrev} enabled={prevBtnEnabled} />
-                  <NextButton onClick={scrollNext} enabled={nextBtnEnabled} />
-                </div>
-
-                <div className="flex justify-center items-center mt-3 gap-1.5">
-                  {scrollSnaps.map((_, index) => (
+        {/* Gender Select */}
+        <div className="text-center">
+            <h2 className="font-bold text-gray-800 mb-3 text-left">2. Select Gender</h2>
+            <div className="grid grid-cols-3 gap-3">
+                {["Male", "Female", "Non-binary"].map((gender) => (
                     <button
-                      key={index}
-                      onClick={() => scrollTo(index)}
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${index === selectedIndex ? "bg-white" : "bg-slate-700"}`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Upsell Card */}
-              <div className="bg-gradient-to-b from-white to-red-50 border border-red-200 p-6 rounded-xl shadow-lg text-center relative overflow-hidden">
-                <div className="mx-auto w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-3 text-blue-600">
-                  <Lock className="fill-blue-600" size={24} />
-                </div>
-
-                <h2 className="text-xl font-bold text-gray-900">Unlock Full Dating Report</h2>
-                <p className="text-xs text-gray-600 mt-2 mb-4">
-                  View unblurred photos, read match messages, and see full dating profiles.
-                </p>
-
-                <div className="bg-red-100 border border-red-300 text-red-800 p-3 rounded-lg mb-4">
-                  <div className="flex items-center justify-center gap-1.5 text-xs font-bold mb-1">
-                    <AlertTriangle size={14} />
-                    <span>OFFER EXPIRES IN:</span>
-                  </div>
-                  <p className="text-3xl font-mono font-bold">{formatTime(timeLeft)}</p>
-                </div>
-
-                <a
-                  href="https://pay.hotmart.com/B101929057U?checkoutMode=10"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition-transform hover:scale-105"
-                >
-                  ACCESS FULL REPORT 🔓
-                </a>
-
-                <div id="hotmart-sales-funnel" className="w-full pt-4"></div>
-              </div>
+                        key={gender}
+                        onClick={() => setSelectedGender(gender)}
+                        className={`p-3 border rounded-xl transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
+                            selectedGender === gender
+                                ? "border-pink-500 bg-pink-50 ring-1 ring-pink-500"
+                                : "border-gray-200 hover:border-gray-300"
+                        }`}
+                    >
+                        <span className="text-3xl">{genderEmojis[gender]}</span>
+                        <span className="text-xs font-bold text-gray-700">{gender}</span>
+                    </button>
+                ))}
             </div>
-          )}
+        </div>
+
+        <button
+            onClick={handleStartInvestigation}
+            disabled={!imagePreview || !selectedGender}
+            className="w-full h-14 bg-gradient-to-r from-red-500 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+        >
+            <Search size={20} />
+            SCAN DATING APPS
+        </button>
+    </div>
+  )
+
+  // --- STEP 2: LOADING ---
+  const renderStep2 = () => (
+    <div className="text-center py-12 space-y-6 animate-fade-in">
+        <div className="relative w-32 h-32 mx-auto">
+            <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-t-pink-500 animate-spin"></div>
+            {imagePreview && (
+                <div className="absolute inset-2 rounded-full overflow-hidden">
+                    <img
+                        src={imagePreview || "/placeholder.svg"}
+                        className="w-full h-full object-cover opacity-80"
+                        alt="target"
+                    />
+                </div>
+            )}
+        </div>
+        <div>
+            <h2 className="text-xl font-bold text-gray-800">Scanning Database...</h2>
+            <p className="text-sm text-gray-500 mt-2 mb-4">Checking Tinder, Bumble, Hinge, and 14 others...</p>
+            
+            {/* Progress Bar */}
+            <div className="w-full max-w-xs mx-auto bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div 
+                    className="bg-gradient-to-r from-red-500 to-pink-600 h-2.5 rounded-full transition-all duration-300 ease-out" 
+                    style={{ width: `${loadingProgress}%` }}
+                ></div>
+            </div>
+            <p className="text-xs text-gray-400 mt-2 font-mono">{Math.floor(loadingProgress)}% COMPLETED</p>
+        </div>
+    </div>
+  )
+
+  // --- STEP 3: RESULTS ---
+  const renderStep3 = () => (
+    <div className="space-y-4 animate-fade-in pb-2">
+         {/* Banner de Sucesso */}
+         <div className="bg-red-500 text-white p-4 rounded-lg shadow-md flex items-center gap-3">
+            <Zap className="fill-yellow-400 text-yellow-400" size={24} />
+            <div>
+                <h1 className="font-bold text-sm">PROFILE FOUND ON 3 APPS</h1>
+                <p className="text-xs text-red-100 opacity-90">
+                Status: <span className="font-bold bg-white/20 px-1 rounded">Online Recently</span>
+                </p>
+            </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-4 gap-2">
+            <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
+                <p className="text-xl font-bold text-red-600">{matches.length}</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase">Matches</p>
+            </div>
+            <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
+                <p className="text-xl font-bold text-orange-500">30+</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase">Likes</p>
+            </div>
+            <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
+                <p className="text-xl font-bold text-purple-600">3</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase">Chats</p>
+            </div>
+            <div className="bg-white p-2 py-3 rounded-lg border text-center shadow-sm">
+                <p className="text-xl font-bold text-gray-800">2h</p>
+                <p className="text-[10px] text-gray-500 font-bold uppercase">Last Seen</p>
+            </div>
+        </div>
+
+        {/* --- TABS --- */}
+        <div className="flex p-1 bg-gray-100 rounded-xl overflow-x-auto no-scrollbar mt-4">
+            <button 
+                onClick={() => setResultTab("matches")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                    resultTab === "matches" ? "bg-white text-pink-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}
+            >
+                <Flame size={18} /> Recent Matches
+            </button>
+            <button 
+                onClick={() => setResultTab("chats")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                    resultTab === "chats" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}
+            >
+                <MessageCircle size={18} /> Chats
+            </button>
+        </div>
+
+        {/* --- CONTEÚDO DAS ABAS --- */}
+        <div className="min-h-[300px] mt-2">
+            
+            {/* 1. ABA DE MATCHES */}
+            {resultTab === "matches" && (
+                <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
+                    <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800">
+                        <Flame className="text-pink-500 fill-pink-500 w-5 h-5" /> Active Matches
+                    </h3>
+                    <div className="grid grid-cols-1 gap-3">
+                        {matches.map((match, i) => (
+                            <div key={i} className="flex gap-4 p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-pink-200 transition-colors">
+                                <img src={match.avatar} alt={match.name} className="w-16 h-16 rounded-lg object-cover" />
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-start">
+                                        <h4 className="font-bold text-gray-900 truncate">{match.name}, {match.age}</h4>
+                                        {match.verified && <CheckCircle size={14} className="text-blue-500 mt-1" />}
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                                        <MapPin size={12} /> {match.distance} away
+                                    </div>
+                                    <p className="text-xs text-gray-600 mt-2 line-clamp-1 italic">"{match.bio}"</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* 2. ABA DE CHATS */}
+            {resultTab === "chats" && (
+                <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
+                    <h3 className="font-bold text-lg flex items-center gap-2 text-gray-800">
+                        <MessageCircle className="text-blue-500 w-5 h-5" /> Intercepted Conversations
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-2">Click on a chat to view history.</p>
+
+                    <div className="space-y-3">
+                        {matches.filter(m => m.chatHistory).map((match, i) => (
+                            <div 
+                                key={i}
+                                onClick={() => setSelectedChat(match)}
+                                className="flex items-center gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                            >
+                                <div className="relative">
+                                    <img src={match.avatar} alt={match.name} className="w-12 h-12 rounded-full object-cover border border-gray-200" />
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="font-bold text-gray-900">{match.name}</p>
+                                        <span className="text-[10px] text-gray-400">Just now</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 truncate flex items-center">
+                                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-2 flex-shrink-0"></span>
+                                        Click to read messages...
+                                    </p>
+                                </div>
+                                <MoreVertical size={16} className="text-gray-400" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+
+        {/* RODAPÉ COM TIMER DINÂMICO */}
+        <div className="mt-8 pt-4 border-t border-gray-100 flex flex-col items-center justify-center gap-1 text-[11px] uppercase tracking-wide text-green-700 font-medium opacity-80 text-center">
+            <div className="flex items-center gap-2">
+                <Clock size={12} className="animate-pulse" />
+                <span>Next automatic system update in:</span>
+            </div>
+            <span className="text-green-800 font-bold bg-green-100 px-2 py-0.5 rounded">
+                {countdownString}
+            </span>
+            <span className="text-[10px] text-gray-400 normal-case mt-1">(7-day update cycle)</span>
+        </div>
+
+        {/* Renderiza o Modal se necessário */}
+        {selectedChat && <ChatModal />}
+    </div>
+  )
+
+  return (
+    <DashboardLayout activeTab="dating">
+      <div className="max-w-xl mx-auto space-y-6">
+        <FeatureCard
+          title={step === 1 ? t?.dateAppsScannerTitle || "Dating Apps Scanner" : step === 2 ? "Scanning..." : "Dating Scan Report"}
+          description={
+            step === 1 ? t?.dateAppsScannerDesc : step === 2 ? "Analyzing databases..." : "Profiles found matching the target image."
+          }
+        >
+            {step === 1 && renderStep1()}
+            {step === 2 && renderStep2()}
+            {step === 3 && renderStep3()}
         </FeatureCard>
 
         {/* Info Card - Apenas no passo 1 */}
-        {pageState === "input" && (
+        {step === 1 && (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
             <div className="flex gap-4">
               <div className="text-purple-600 flex-shrink-0 text-2xl">❤️</div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Deep Scan Technology</h3>
                 <p className="text-sm text-muted-foreground">
-                  We use advanced image recognition to find profiles on Tinder, Bumble, Hinge, Grindr, and 50+ other
-                  dating sites.
+                  We use advanced image recognition to find profiles on Tinder, Bumble, Hinge, Grindr, and 50+ other dating sites.
                 </p>
               </div>
             </div>
@@ -810,7 +602,7 @@ function DatingAppScannerContent() {
 }
 
 // =======================================================
-// EXPORTAÇÃO DA PÁGINA (COM SUSPENSE WRAPPER)
+// EXPORTAÇÃO DA PÁGINA
 // =======================================================
 
 export default function DatingAppScannerPage() {
