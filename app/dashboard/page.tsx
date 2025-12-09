@@ -19,25 +19,25 @@ export default function DashboardHome() {
     {
       icon: Activity,
       label: "Instagram Scans",
-      value: "24",
+      value: "0",
       color: "text-pink-600",
     },
     {
       icon: Users,
       label: "WhatsApp Profiles",
-      value: "18",
+      value: "0",
       color: "text-green-600",
     },
     {
       icon: Zap,
       label: "Dating Profiles",
-      value: "12",
+      value: "0",
       color: "text-purple-600",
     },
     {
       icon: TrendingUp,
       label: "Total Scanned",
-      value: "54",
+      value: "0",
       color: "text-blue-600",
     },
   ]
